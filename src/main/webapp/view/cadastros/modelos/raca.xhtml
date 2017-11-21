@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Raça</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{racaBean.inicializarBean}" type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Raça</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{racaBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						style="margin-left: 3px; margin-right: 3px"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{racaBean.editar}"
+						disabled="#{racaBean.racaSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{racaBean.editar}"
+						disabled="#{racaBean.racaSelecionado == null}">
+					</p:commandButton>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-raca" value="#{racaBean.racas}" var="raca"
+				style="margin-top: 5px" emptyMessage="Nenhuma registro encontrada."
+				rows="10" paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{racaBean.racaSelecionado}" rowKey="#{raca.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{raca.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{raca.id}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="width: 400px"
+					sortBy="#{raca.nome}">
+					<h:outputText value="#{raca.nome}" />
+				</p:column>
+
+				<p:column headerText="Espécie" style="width: 200px"
+					sortBy="#{raca.especie.nome}">
+					<h:outputText value="#{raca.especie.nome}" />
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{raca.status}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{raca.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Raça" widgetVar="dialogCadastro"
+			modal="true" resizable="false" draggable="true" id="dgCadastro"
+			closeOnEscape="true" width="400" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:panelGrid columns="2" styleClass="semBorda">
+
+					<p:outputLabel for="txtId" value="ID:" />
+					<p:inputText id="txtId" size="5" style="text-align:center;"
+						disabled="true" value="#{racaBean.raca.id}" />
+
+					<p:outputLabel for="combo" value="Espécie" />
+					<p:panelGrid>
+						<p:selectOneMenu id="combo" style="width:180px; top:3px;"
+							converter="omnifaces.SelectItemsConverter" required="true"
+							requiredMessage="Selecione uma espécie"
+							value="#{racaBean.raca.especie}">
+							<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+							<f:selectItems value="#{racaBean.especies}" var="especie"
+								itemLabel="#{especie.nome}" itemValue="#{especie}" />
+						</p:selectOneMenu>
+						<p:commandButton icon="adicionar-icon"
+							style="margin-left: 8px; bottom:4px;"
+							oncomplete="PF('dialogCadEspecie').show()" process="@this"
+							styleClass="semPreenchimento1" update="form-cad-especie"
+							action="#{especieBean.novoCadastro}" />
+					</p:panelGrid>
+
+					<p:outputLabel for="txtNome" value="Nome:" />
+					<p:inputText id="txtNome" size="37" maxlength="35" required="true"
+						requiredMessage="Informe o nome" value="#{racaBean.raca.nome}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox value="#{racaBean.raca.status}" />
+
+				</p:panelGrid>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 0px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-right:3px;"
+							oncomplete="PF('dialogCadastro').hide()" immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							update="form-cadastro, form-table, form-menu"
+							action="#{racaBean.salvar}" id="salvarCommandButton"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Exclusão Raça" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Tem certeza que deseja excluir a Raça:" />
+					<p:outputLabel
+						value="#{racaBean.raca.id} - #{racaBean.raca.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{racaBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Manutenção Espécie" widgetVar="dialogCadEspecie"
+			modal="true" resizable="false" draggable="true" id="dgCadEspecie"
+			closeOnEscape="true" width="400" appendTo="@(body)">
+
+			<h:form id="form-cad-especie">
+
+				<p:panelGrid columns="2" styleClass="semBorda">
+
+					<p:outputLabel for="txtNome" value="Nome:" />
+					<p:inputText id="txtNome" size="35" maxlength="35" required="true"
+						requiredMessage="Informe o nome"
+						value="#{especieBean.especie.nome}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox value="#{especieBean.especie.status}"
+						disabled="true" />
+
+				</p:panelGrid>
+
+				<h:panelGrid columns="2" style="margin-top: 20px;">
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						update="form-cad-especie, form-cadastro:combo"
+						action="#{especieBean.salvar}"
+						oncomplete="if(!args.validationFailed) PF('dialogCadEspecie').hide()" />
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-left:0px;"
+						oncomplete="PF('dialogCadEspecie').hide()" immediate="true" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

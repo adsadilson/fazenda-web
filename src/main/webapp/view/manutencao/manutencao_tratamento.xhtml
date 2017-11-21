@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Manutenção Tratamento</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{tratamentoBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Manutenção - Tratamento</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{tratamentoBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						style="margin-left: 5px; margin-right: 5px;"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{tratamentoBean.editar}"
+						disabled="#{tratamentoBean.tratamentoSelecionado==null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{tratamentoBean.editar}"
+						disabled="#{tratamentoBean.tratamentoSelecionado==null}">
+					</p:commandButton>
+					<ui:remove>
+						<p:separator />
+						<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+							style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+					</ui:remove>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-tratamento"
+				value="#{tratamentoBean.tratamentos}" var="tratamento"
+				style="margin-top: 5px" styleClass="table-tela-manutecao"
+				emptyMessage="Nenhuma registro encontrada." rows="10"
+				paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{tratamentoBean.tratamentoSelecionado}"
+				rowKey="#{tratamento.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Brinco"
+					style="width: 80px; text-align: center;"
+					sortBy="#{tratamento.animal.brinco}">
+					<h:outputText value="#{tratamento.animal.brinco}" />
+				</p:column>
+
+				<p:column headerText="Animal" style="width: 250px"
+					sortBy="#{tratamento.animal.nome}">
+					<h:outputText value="#{tratamento.animal.nome}" />
+				</p:column>
+
+				<p:column headerText="Dt Tratamento"
+					style="width: 120px; text-align: center;"
+					sortBy="#{tratamento.dtTratamento}">
+					<h:outputText value="#{tratamento.dtTratamento}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Tipo Tratamento" style="width: 200px">
+					<h:outputText value="#{tratamento.tipoTratamento.nome}" />
+				</p:column>
+
+				<p:column headerText="Tipo Aplicação" style="width: 200px">
+					<h:outputText value="#{tratamento.tipoAplicacao.nome}" />
+				</p:column>
+
+
+				<p:column headerText="Medicamento" style="width: 150px">
+					<h:outputText value="#{tratamento.medicamento}" />
+				</p:column>
+				
+				<p:column headerText="Qtd" style="width: 50px">
+					<h:outputText value="#{tratamento.quantidade}" />
+				</p:column>
+				
+				<p:column headerText="Und." style="width: 100px">
+					<h:outputText value="#{tratamento.unidade.nome} - #{tratamento.unidade.descricao}" />
+				</p:column>
+
+				<p:column headerText="Obsevação" style="width: 200px">
+					<h:outputText value="#{tratamento.obs}" />
+				</p:column>
+
+
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Lançamento de Tratamento" widgetVar="dialogCadastro"
+			styleClass="espacamento_dialog" modal="true" resizable="false"
+			draggable="true" id="dgCadastro" closeOnEscape="true" width="auto"
+			height="auto" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:tabView styleClass="espacamento-tabview">
+					<p:tab title="Identificação do Animal">
+						<p:panelGrid columns="1" styleClass="semBorda">
+							<p:outputLabel for="nome" value="Brinco/Nome" />
+							<p:selectOneMenu autoWidth="false" filter="true"
+								filterMatchMode="contains" style="width: 460px;" required="true"
+								id="nome" requiredMessage="Selecione um animal"
+								disabled="#{tratamentoBean.tratamento.id!=null}"
+								value="#{tratamentoBean.tratamento.animal}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItem itemLabel="Selecione um animal"
+									itemValue="#{null}" />
+								<f:selectItems value="#{tratamentoBean.animals}" var="animal"
+									itemLabel="#{animal.brinco} - #{animal.nome}"
+									itemValue="#{animal}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+
+				<p:tabView id="tabview" styleClass="espacamento-tabview">
+					<p:tab title="Tratamento">
+						<p:panelGrid styleClass="semBorda">
+							<!-- 1ª LINHA -->
+							<p:row>
+								<p:column>
+									<p:outputLabel for="dttratamento" value="Data Tratamento" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="tipotratamento" value="Tipo Tratamento" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="tipoAplicacao" value="Tipo Aplicação" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:calendar id="dttratamento" size="12" pattern="dd/MM/yyyy"
+										locale="pt_BR" required="true"
+										disabled="#{tratamentoBean.tratamento.id!=null}"
+										value="#{tratamentoBean.tratamento.dtTratamento}"
+										requiredMessage="Informe a data tratamento">
+									</p:calendar>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="tipotratamento" autoWidth="false"
+										style="width: 150px;" required="true"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{tratamentoBean.tratamento.tipoTratamento}"
+										requiredMessage="Selecione um tipo tratamento">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{tratamentoBean.tipoTratamentos}"
+											var="tpTratamento" itemLabel="#{tpTratamento.nome}"
+											itemValue="#{tpTratamento}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="tipoAplicacao" autoWidth="false"
+										style="width: 150px;" required="true"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{tratamentoBean.tratamento.tipoAplicacao}"
+										requiredMessage="Selecione um tipo aplicação">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{tratamentoBean.tipoAplicacoes}"
+											var="aplicacao" itemLabel="#{aplicacao.nome}"
+											itemValue="#{aplicacao}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<h:panelGroup>
+										<p:outputLabel for="txtMedicamento" value="Medicamento" />
+										<p:outputLabel for="txtQtde" value="Qtde"
+											style="margin-left:156px;" />
+									</h:panelGroup>
+								</p:column>
+								<p:column>
+									<p:outputLabel for="txtUnidade" value="Unidade" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<h:panelGroup>
+										<p:inputText id="txtMedicamento" size="29" required="true"
+											requiredMessage="Informe o medicamento."
+											value="#{tratamentoBean.tratamento.medicamento}" />
+										<p:inputText id="txtQtde" size="3" style="margin-left:5px;"
+											required="true" requiredMessage="Informe a quantidade"
+											value="#{tratamentoBean.tratamento.quantidade}" />
+									</h:panelGroup>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="txtUnidade" autoWidth="false"
+										style="width: 150px;" required="true"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{tratamentoBean.tratamento.unidade}"
+										requiredMessage="Selecione uma unidade">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{tratamentoBean.unidades}" var="un"
+											itemLabel="#{un.nome} - #{un.descricao}" itemValue="#{un}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<!-- 2ª LINHA -->
+							<p:row>
+								<p:column colspan="3">
+									<p:inputTextarea rows="3" style="width: 98%;"
+										value="#{tratamentoBean.tratamento.obs}" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+
+
+				<p:toolbar style="margin-top: 10px" styleClass="semPreenchimento">
+					<p:toolbarGroup style="margin-left: 15px;">
+						<ui:remove>
+							<p:commandButton icon="fa fa-question-circle" iconPos="right"
+								title="Informação" oncomplete="PF('cadastroInfo').show()"
+								process="@this">
+								<p:resetInput target="form-cadastro-info" />
+							</p:commandButton>
+						</ui:remove>
+					</p:toolbarGroup>
+					<p:toolbarGroup align="right" style="margin-right: 10px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-right: 3px;"
+							oncomplete="PF('dialogCadastro').hide()" immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							update=":form-cadastro :form-cadastro:tabview :form-table :form-menu"
+							action="#{tratamentoBean.salvar}" id="salvarCommandButton"
+							oncomplete="if(args.sucesso == true) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Exclusão" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Tratamento aplicada no Animal:" />
+					<p:outputLabel
+						value="#{tratamentoBean.tratamento.animal.brinco} - #{tratamentoBean.tratamento.animal.nome} ?" />
+					<p:outputLabel
+						value="#{tratamentoBean.tratamento.id} - #{tratamentoBean.tratamento.tipoTratamento.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{tratamentoBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="Informação" widgetVar="cadastroInfo" modal="true"
+			resizable="false" draggable="true" closeOnEscape="true" width="350"
+			height="190" appendTo="@(body)">
+			<h:form id="form-cadastro-info">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Observação" style="color: red;" />
+					<p:outputLabel
+						value="Depois de cadastrado o registro de
+					tratamento/Diagnóstico só é permitido alteração dos campos de
+					Observação e Diagnóstico (desde que o parto ainda não tenha sido
+					cadastrado). Caso algum outro tipo de informação esteja incorreto,
+					será necessário excluir o registro e incluí-lo novamente" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button icon="fa fa-thumbs-up"
+						style="margin-right:8px; margin-top: 20px"
+						onclick="PF('cadastroInfo').hide(); return false;" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>

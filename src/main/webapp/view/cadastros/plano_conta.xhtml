@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Plano de Conta</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{planoContaBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Plano de Contas</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{planoContaBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{planoContaBean.editar}"
+						disabled="#{planoContaBean.planoContaSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{planoContaBean.editar}"
+						disabled="#{planoContaBean.planoContaSelecionado == null}">
+					</p:commandButton>
+					<p:separator />
+					<p:commandButton icon="fa fa-copy" value="Clonar"
+						style="margin-left:5px; margin-right:6px;"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{planoContaBean.clonarCadastro}"
+						immediate="true"
+						disabled="#{planoContaBean.planoContaSelecionado == null}" />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						update="frm-dialog" action="#{planoContaBean.novoFiltro}"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-planoConta"
+				value="#{planoContaBean.planoContas}" var="planoConta"
+				style="margin-top: 5px" emptyMessage="Nenhuma registro encontrada."
+				rows="100" paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{planoContaBean.planoContaSelecionado}"
+				rowKey="#{planoConta.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{planoConta.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{planoConta.id}" />
+				</p:column>
+
+				<p:column headerText="Mascara" style="width: 100px"
+					sortBy="#{planoConta.mascara}">
+					<h:outputText value="#{planoConta.mascara}" />
+				</p:column>
+
+				<p:column headerText="Cód Acesso" style="width: 100px"
+					sortBy="#{planoConta.codigoAcesso}">
+					<h:outputText value="#{planoConta.codigoAcesso}" />
+				</p:column>
+
+				<p:column headerText="Conta" style="width: 350px"
+					sortBy="#{planoConta.conta}">
+					<h:outputText value="#{planoConta.conta}" />
+				</p:column>
+
+				<p:column headerText="Conta Pai"
+					style="width: 100px; text-align: center;"
+					sortBy="#{planoConta.contaPai.id}">
+					<h:outputText value="#{planoConta.contaPai.id}" />
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{planoConta.status}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{planoConta.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Plano de Conta"
+			widgetVar="dialogCadastro" modal="true" resizable="false"
+			draggable="true" id="dgCadastro" closeOnEscape="true" width="430"
+			appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:panelGrid styleClass="semBorda">
+
+					<!-- 1ª Linha -->
+					<p:row>
+						<p:column>
+							<p:outputLabel value="ID" />
+						</p:column>
+						<p:column>
+							<p:outputLabel for="txtMascara" value="Mascara" />
+						</p:column>
+						<p:column>
+							<p:outputLabel for="txtAcesso" value="Código Acesso" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:inputText size="7" style="text-align:center;" disabled="true"
+								value="#{planoContaBean.planoConta.id}" />
+						</p:column>
+						<p:column>
+							<p:inputText id="txtMascara" size="15" required="true"
+								requiredMessage="Informe a mascara"
+								value="#{planoContaBean.planoConta.mascara}" />
+						</p:column>
+						<p:column>
+							<p:inputText id="txtAcesso" size="15" required="true"
+								requiredMessage="Informe a código de acesso"
+								value="#{planoContaBean.planoConta.codigoAcesso}" />
+						</p:column>
+					</p:row>
+
+					<!-- 2ª linha -->
+					<p:row>
+						<p:column colspan="3">
+							<p:outputLabel for="txtConta" value="Conta" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="3">
+							<p:inputText id="txtConta" required="true" style="width: 97%;"
+								requiredMessage="Informe o conta"
+								value="#{planoContaBean.planoConta.conta}" />
+						</p:column>
+					</p:row>
+
+					<!-- 3ª linha -->
+					<p:row>
+						<p:column colspan="3">
+							<p:outputLabel for="txtContaPai" value="Conta Pai" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="3">
+							<p:selectOneMenu id="txtContaPai" filter="true"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{planoContaBean.planoConta.contaPai}"
+								style="width: 365px;">
+								<f:selectItem itemLabel="Selecione..." value="#{null}" />
+								<f:selectItems value="#{planoContaBean.planoContaPais}"
+									var="obj" itemLabel="#{obj.conta}" itemValue="#{obj}" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<!-- 4ª Linha -->
+					<p:row>
+						<p:column colspan="3">
+							<p:selectBooleanCheckbox itemLabel="Ativo"
+								value="#{planoContaBean.planoConta.status}" />
+						</p:column>
+					</p:row>
+
+
+
+				</p:panelGrid>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 0px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-left:0px;" oncomplete="PF('dialogCadastro').hide()"
+							immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							id="salvarCommandButton" style="margin-left:6px;"
+							update="form-cadastro, form-table, form-menu"
+							action="#{planoContaBean.salvar}"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Exclusão Plano de Conta"
+			widgetVar="confirmacaoExclusao" modal="true" resizable="false"
+			draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Plano de Conta:" />
+					<p:outputLabel
+						value="#{planoContaBean.planoConta.id} - #{planoContaBean.planoConta.conta} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{planoContaBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Filtro" widgetVar="dialogFiltro" modal="true"
+			resizable="false" draggable="false" id="dgFiltro"
+			closeOnEscape="true" width="305" appendTo="@(body)">
+			<h:form id="frm-dialog">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<h:outputLabel value="Conta" />
+					<p:inputText value="#{planoContaBean.filtro.conta}" size="33" />
+
+					<ui:remove>
+						<p:outputLabel value="Conta Pai" />
+						<p:selectOneMenu filter="true"
+							converter="omnifaces.SelectItemsConverter"
+							value="#{planoContaBean.filtro.contaPaiID}"
+							style="width:245px !important;" autoWidth="false">
+							<f:selectItem itemLabel="Selecione..." value="#{null}" />
+							<f:selectItems value="#{planoContaBean.planoContaPais}" var="o"
+								itemLabel="#{o.conta}" itemValue="#{o}" />
+						</p:selectOneMenu>
+					</ui:remove>
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectOneMenu style="width: 235px;"
+						value="#{planoContaBean.filtro.ativo}">
+						<f:selectItem itemLabel="TODOS" value="#{null}" />
+						<f:selectItems value="#{planoContaBean.ativoInativo}" var="obj"
+							itemLabel="#{obj.descricao}" itemValue="#{obj}" />
+					</p:selectOneMenu>
+
+				</p:panelGrid>
+				<h:panelGrid columns="2" style="margin-top: 10px;">
+					<p:commandButton value="Pesquisar" icon="fa fa-search"
+						action="#{planoContaBean.pesquisar}"
+						oncomplete="PF('dialogFiltro').hide()" update="form-table" />
+					<p:commandButton value="Cancelar" icon="fa fa-close"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').hide()"
+						process="@this" update="@form" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Funcionário</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{funcionarioBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Funcionários</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{funcionarioBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{funcionarioBean.editar}"
+						disabled="#{funcionarioBean.funcionarioSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{funcionarioBean.editar}"
+						disabled="#{funcionarioBean.funcionarioSelecionado == null}">
+					</p:commandButton>
+					<ui:remove>
+						<p:separator />
+						<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+							style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+					</ui:remove>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-funcionario"
+				value="#{funcionarioBean.funcionarios}" var="funcionario"
+				style="margin-top: 5px" emptyMessage="Nenhuma registro encontrada."
+				rows="10" paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{funcionarioBean.funcionarioSelecionado}"
+				rowKey="#{funcionario.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{funcionario.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{funcionario.id}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="width: 400px"
+					sortBy="#{funcionario.nome}">
+					<h:outputText value="#{funcionario.nome}" />
+				</p:column>
+
+				<p:column headerText="Tipo" style="width: 50px; text-align: center;"
+					sortBy="#{funcionario.tipoPessoa}">
+					<h:outputText value="#{funcionario.tipoPessoa}" />
+				</p:column>
+
+				<p:column headerText="Cpf ou Cnpj" style="width: 140px"
+					sortBy="#{funcionario.cpfCnpj}">
+					<h:outputText value="#{funcionario.cpfCnpj}" />
+				</p:column>
+
+				<p:column headerText="Telefone" style="width: 100px"
+					sortBy="#{funcionario.telefone}">
+					<h:outputText value="#{funcionario.telefone}" />
+				</p:column>
+
+				<p:column headerText="Celular" style="width: 100px"
+					sortBy="#{funcionario.celular}">
+					<h:outputText value="#{funcionario.celular}" />
+				</p:column>
+
+
+				<p:column headerText="Status" sortBy="#{funcionario.status}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{funcionario.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Funcionário" widgetVar="dialogCadastro"
+			modal="true" resizable="false" draggable="true" id="dgCadastro"
+			closeOnEscape="true" width="750" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+				<p:tabView id="form-tabview" cache="false"
+					style="width: 100%; height: 310px; ">
+					<p:tab title="Principal">
+						<ui:include src="aba_dados.xhtml" />
+					</p:tab>
+					<p:tab title="Endereço">
+						<ui:include src="aba_endereco.xhtml" />
+					</p:tab>
+					<p:tab title="Documentação">
+						<ui:include src="aba_doc.xhtml" />
+					</p:tab>
+					<p:tab title="Profissional">
+						<ui:include src="aba_profissional.xhtml" />
+					</p:tab>
+					<p:tab title="Financeiro">
+						<ui:include src="aba_financa.xhtml" />
+					</p:tab>
+					<p:tab title="Obs">
+						<p:editor height="230"></p:editor>
+					</p:tab>
+				</p:tabView>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 40px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-left:0px;" oncomplete="PF('dialogCadastro').hide()"
+							immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							id="salvarCommandButton"
+							update="form-cadastro, form-table, form-menu"
+							action="#{funcionarioBean.salvar}"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Exclusão Funcionário"
+			widgetVar="confirmacaoExclusao" modal="true" resizable="false"
+			draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Funcionário:" />
+					<p:outputLabel
+						value="#{funcionarioBean.funcionario.id} - #{funcionarioBean.funcionario.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{funcionarioBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

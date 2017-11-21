@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Cadastros Basicos</ui:define>
+
+	<ui:define name="corpo">
+
+		<h1>Cadastros Basicos</h1>
+
+		<p:tabView style="height: 420px;" id="tabView">
+
+			<p:tab title="Causa Morte" id="tabCausaMorte">
+				<ui:include src="causa_morte.xhtml" />
+			</p:tab>
+			<p:tab title="Motivo Venda" id="tabMotivoVenda">
+				<ui:include src="motivo_venda.xhtml" />
+			</p:tab>
+			<p:tab title="Raça" id="tabRaca">
+				<ui:include src="raca.xhtml" />
+			</p:tab>
+			<p:tab title="Espécie" id="tabEspecie">
+				<ui:include src="especie.xhtml" />
+			</p:tab>
+			<p:tab title="Pelagem" id="tabPelagem">
+				<ui:include src="pelagem.xhtml" />
+			</p:tab>
+			<p:tab title="Origem" id="tabOrigem">
+				<ui:include src="origem.xhtml" />
+			</p:tab>
+			<p:tab title="Categoria" id="tabCategoria">
+				<ui:include src="categoria.xhtml" />
+			</p:tab>
+			<p:tab title="Condição Corporal" id="tabCorporal">
+				<ui:include src="cond_corporal.xhtml" />
+			</p:tab>
+			<p:tab title="Tipo Parto" id="tabParto">
+				<ui:include src="tipo_parto.xhtml" />
+			</p:tab>
+			<p:tab title="Tipo Secagem" id="tabSecagem">
+				<ui:include src="tipo_secagem.xhtml" />
+			</p:tab>
+			<p:tab title="Tipo Tratamento" id="tabTratamento">
+				<ui:include src="tipo_tratamento.xhtml" />
+			</p:tab>
+			<p:tab title="Tipo Aplicação" id="tabAplicacao">
+				<ui:include src="tipo_aplicacao.xhtml" />
+			</p:tab>
+			<p:tab title="Tipo Exame" id="tabExame">
+				<ui:include src="tipo_exame.xhtml" />
+			</p:tab>
+			<p:tab title="Tipo Vacina" id="tabVacina">
+				<ui:include src="tipo_vacina.xhtml" />
+			</p:tab>
+			<p:tab title="Tanque Leite" id="tabTanque">
+				<ui:include src="tanque.xhtml" />
+			</p:tab>
+		</p:tabView>
+
+	</ui:define>
+
+</ui:composition>

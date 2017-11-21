@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem de espécie</h2>
+
+	<h:form id="frm-menu-especie">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadEspecie').show()" process="@this"
+					update=":tabView:frm-cadastro-especie"
+					action="#{especieBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-especie" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadEspecie').show()" process="@this"
+					update=":tabView:frm-cadastro-especie"
+					action="#{especieBean.editar}"
+					disabled="#{especieBean.especieSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-especie" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoEspecie').show()" process="@this"
+					update=":tabView:frm-excluir-especie"
+					action="#{especieBean.editar}"
+					disabled="#{especieBean.especieSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-especie">
+		<p:dataTable id="tbl-especie" value="#{especieBean.especies}"
+			var="especie" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{especieBean.especieSelecionado}"
+			rowKey="#{especie.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-especie, :tabView:frm-tabela-especie" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-especie, :tabView:frm-tabela-especie" />
+
+			<p:column headerText="Codigo"
+				style="width: 100px; text-align: center;" sortBy="#{especie.id}">
+				<h:outputText value="#{especie.id}" />
+			</p:column>
+
+			<p:column headerText="Espécie" style="width: 250px"
+				sortBy="#{especie.nome}">
+				<h:outputText value="#{especie.nome}" />
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{especie.status}">
+				<h:outputText value="#{especie.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão  de Especie"
+		widgetVar="confirmacaoExclusaoEspecie" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-especie">
+			<p:panelGrid id="pExcluirEspecie" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir  Especie:" />
+				<p:outputLabel
+					value="#{especieBean.especie.id} - #{especieBean.especie.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoEspecie').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{especieBean.excluir}"
+					update=":tabView:frm-menu-especie, :tabView:frm-tabela-especie"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoEspecie').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro  Especie" widgetVar="dialogCadEspecie"
+		modal="true" resizable="false" draggable="true" id="dgCadEspecie"
+		closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-cadastro-especie">
+			<p:panelGrid id="panelCadastroEspecie" columns="3"
+				styleClass="semBorda">
+
+				<p:outputLabel for="txtIdEspecie" value="ID" />
+				<p:outputLabel for="txtNomeEspecie" value="Nome" />
+				<p:outputLabel style="margin-left:10px" value="Ativo" />
+
+				<p:inputText id="txtIdEspecie" size="3" style="text-align:center;"
+					disabled="true" value="#{especieBean.especie.id}" />
+				<p:inputText id="txtNomeEspecie" size="31" maxlength="35"
+					required="true" requiredMessage="Informe o nome"
+					value="#{especieBean.especie.nome}" />
+				<p:selectBooleanCheckbox style="margin-left:10px"
+					value="#{especieBean.especie.status}" />
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-especie :tabView:frm-tabela-especie :tabView:frm-menu-especie"
+						oncomplete="PF('dialogCadEspecie').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonEspecie" action="#{especieBean.salvar}"
+						update=":tabView:frm-cadastro-especie :tabView:frm-tabela-especie :tabView:frm-menu-especie"
+						oncomplete="if(!args.validationFailed) PF('dialogCadEspecie').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonEspecie" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

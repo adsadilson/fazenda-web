@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem de origem</h2>
+
+	<h:form id="frm-menu-origem">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadOrigem').show()" process="@this"
+					update=":tabView:frm-cadastro-origem"
+					action="#{origemBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-origem" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadOrigem').show()" process="@this"
+					update=":tabView:frm-cadastro-origem"
+					action="#{origemBean.editar}"
+					disabled="#{origemBean.origemSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-origem" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoOrigem').show()" process="@this"
+					update=":tabView:frm-excluir-origem"
+					action="#{origemBean.editar}"
+					disabled="#{origemBean.origemSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-origem">
+		<p:dataTable id="tbl-origem" value="#{origemBean.origems}"
+			var="origem" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{origemBean.origemSelecionado}"
+			rowKey="#{origem.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-origem, :tabView:frm-tabela-origem" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-origem, :tabView:frm-tabela-origem" />
+
+			<p:column headerText="Codigo"
+				style="width: 100px; text-align: center;" sortBy="#{origem.id}">
+				<h:outputText value="#{origem.id}" />
+			</p:column>
+
+			<p:column headerText="Origem" style="width: 250px"
+				sortBy="#{origem.nome}">
+				<h:outputText value="#{origem.nome}" />
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{origem.status}">
+				<h:outputText value="#{origem.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão  de Origem"
+		widgetVar="confirmacaoExclusaoOrigem" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-origem">
+			<p:panelGrid id="pExcluirOrigem" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir  Origem:" />
+				<p:outputLabel
+					value="#{origemBean.origem.id} - #{origemBean.origem.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoOrigem').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{origemBean.excluir}"
+					update=":tabView:frm-menu-origem, :tabView:frm-tabela-origem"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoOrigem').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro  Origem" widgetVar="dialogCadOrigem"
+		modal="true" resizable="false" draggable="true" id="dgCadOrigem"
+		closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-cadastro-origem">
+			<p:panelGrid id="panelCadastroOrigem" columns="3"
+				styleClass="semBorda">
+
+				<p:outputLabel for="txtIdOrigem" value="ID" />
+				<p:outputLabel for="txtNomeOrigem" value="Nome" />
+				<p:outputLabel style="margin-left:10px" value="Ativo" />
+
+				<p:inputText id="txtIdOrigem" size="3" style="text-align:center;"
+					disabled="true" value="#{origemBean.origem.id}" />
+				<p:inputText id="txtNomeOrigem" size="31" maxlength="35"
+					required="true" requiredMessage="Informe o nome"
+					value="#{origemBean.origem.nome}" />
+				<p:selectBooleanCheckbox style="margin-left:10px"
+					value="#{origemBean.origem.status}" />
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-origem :tabView:frm-tabela-origem :tabView:frm-menu-origem"
+						oncomplete="PF('dialogCadOrigem').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonOrigem" action="#{origemBean.salvar}"
+						update=":tabView:frm-cadastro-origem :tabView:frm-tabela-origem :tabView:frm-menu-origem"
+						oncomplete="if(!args.validationFailed) PF('dialogCadOrigem').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonOrigem" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

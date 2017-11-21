@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Manutenção Cobertura</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{fichaCoberturaBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Manutenção - Cobertura</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{fichaCoberturaBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						style="margin-left: 5px; margin-right: 5px;"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{fichaCoberturaBean.editar}"
+						disabled="#{fichaCoberturaBean.condicaoEditarExcluir()}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{fichaCoberturaBean.editar}"
+						disabled="#{fichaCoberturaBean.condicaoEditarExcluir()}">
+					</p:commandButton>
+					<ui:remove>
+						<p:separator />
+						<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+							style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+					</ui:remove>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-cobertura"
+				value="#{fichaCoberturaBean.coberturas}" var="cobertura"
+				style="margin-top: 5px" styleClass="table-tela-manutecao"
+				emptyMessage="Nenhuma registro encontrada." rows="10"
+				paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{fichaCoberturaBean.coberturaSelecionado}"
+				rowKey="#{cobertura.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table"
+					listener="#{fichaCoberturaBean.infoDtPartoValidation()}" />
+
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Brinco"
+					style="width: 80px; text-align: center;"
+					sortBy="#{cobertura.animal.brinco}">
+					<h:outputText value="#{cobertura.animal.brinco}" />
+				</p:column>
+
+				<p:column headerText="Animal" style="width: 200px"
+					sortBy="#{cobertura.animal.nome}">
+					<h:outputText value="#{cobertura.animal.nome}" />
+				</p:column>
+
+				<p:column headerText="Dt Cobertura"
+					style="width: 100px; text-align: center;"
+					sortBy="#{cobertura.dtCobertura}">
+					<h:outputText value="#{cobertura.dtCobertura}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Tipo Cobertura" style="width: 200px">
+					<h:outputText value="#{cobertura.tipoCobertura}" />
+				</p:column>
+
+				<p:column headerText="Responsável" style="width: 180px">
+					<h:outputText value="#{cobertura.responsavel}" />
+				</p:column>
+
+				<p:column headerText="Reprodutor" style="width: 150px">
+					<h:outputText value="#{cobertura.reprodutor}" />
+				</p:column>
+
+				<p:column headerText="Cond. Corporal" style="width: 120px">
+					<h:outputText value="#{cobertura.condicaoCorporal.nome}" />
+				</p:column>
+
+				<p:column headerText="Dt Diagnótico"
+					style="width: 110px; text-align: center;"
+					sortBy="#{cobertura.dtDiagnostico}">
+					<h:outputText value="#{cobertura.dtDiagnostico}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Resultado" sortBy="#{cobertura.resultado}"
+					style="width: 100px">
+					<h:outputText value="#{cobertura.resultado}" />
+				</p:column>
+
+				<p:column headerText="Dt Prev. Parto"
+					style="width: 110px; text-align: center;"
+					sortBy="#{cobertura.dtCadastro}">
+					<h:outputText value="#{cobertura.dtCadastro}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Dt Parto"
+					style="width: 110px; text-align: center;"
+					sortBy="#{cobertura.dtParto}">
+					<h:outputText value="#{cobertura.dtParto}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Lançamento de Cobertura" widgetVar="dialogCadastro"
+			styleClass="espacamento_dialog" modal="true" resizable="false"
+			draggable="true" id="dgCadastro" closeOnEscape="true" width="615"
+			height="415" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:tabView styleClass="espacamento-tabview">
+					<p:tab title="Identificação do Animal">
+						<p:panelGrid columns="1" styleClass="semBorda">
+							<p:outputLabel for="nome" value="Brinco/Nome" />
+							<p:selectOneMenu autoWidth="false" filter="true"
+								filterMatchMode="contains" style="width: 545px;" required="true"
+								id="nome" requiredMessage="Selecione um animal"
+								disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+								value="#{fichaCoberturaBean.cobertura.animal}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItem itemLabel="Selecione um animal"
+									itemValue="#{null}" />
+								<f:selectItems value="#{fichaCoberturaBean.animals}"
+									var="animal" itemLabel="#{animal.brinco} - #{animal.nome}"
+									itemValue="#{animal}" />
+								<p:ajax event="change" process="@this"
+									listener="#{fichaCoberturaBean.verificarCobertura}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+
+				<p:tabView id="tabview" styleClass="espacamento-tabview">
+					<p:tab title="Cobertura">
+						<p:panelGrid styleClass="semBorda">
+							<!-- 1ª LINHA -->
+							<p:row>
+								<p:column>
+									<p:outputLabel for="dtCobertura" value="Data Cobertura" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="tipoCobertura" value="Tipo Cobertura" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="responsavel" value="Responsável" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:calendar id="dtCobertura" size="12" pattern="dd/MM/yyyy"
+										locale="pt_BR" required="true"
+										disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+										value="#{fichaCoberturaBean.cobertura.dtCobertura}"
+										requiredMessage="Informe a data cobertura">
+									</p:calendar>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="tipoCobertura" autoWidth="false"
+										style="width: 150px;" required="true"
+										disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+										value="#{fichaCoberturaBean.cobertura.tipoCobertura}"
+										requiredMessage="Selecione um tipo cobertura">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItem itemLabel="Monta Natural"
+											itemValue="MONTA NATURAL" />
+										<f:selectItem itemLabel="Inseminação Artificial"
+											itemValue="INSEMINACAO ARTIFICIAL" />
+										<f:selectItem itemLabel="Implante de Embrião"
+											itemValue="IMPLANTE DE EMBRIAO" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="responsavel" autoWidth="false"
+										style="width: 235px;" required="true"
+										disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+										value="#{fichaCoberturaBean.cobertura.responsavel}"
+										requiredMessage="Selecione um responsável">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{fichaCoberturaBean.responsaveis}"
+											var="responsavel" itemLabel="#{responsavel.nome}"
+											itemValue="#{responsavel.nome}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<!-- 2ª LINHA -->
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Partida" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="reprodutor" value="Reprodutor" />
+								</p:column>
+								<p:column rowspan="6">
+									<p:fieldset legend="Diagnóstico" id="diagnostico"
+										style="height: 155px; margin-top: 2px">
+										<p:panelGrid>
+											<p:row>
+												<p:column>
+													<p:outputLabel for="dtDiag" value="Data" />
+												</p:column>
+												<p:column>
+													<p:outputLabel value="Prev. Parto" />
+												</p:column>
+											</p:row>
+											<p:row>
+												<p:column>
+													<p:calendar id="dtDiag" size="10" pattern="dd/MM/yyyy"
+														styleClass="center" validator="dataDiagnosticoValidation"
+														value="#{fichaCoberturaBean.cobertura.dtDiagnostico}">
+														<p:ajax event="dateSelect" process="@this" />
+														<f:attribute name="resulDiagnostico"
+															value="#{fichaCoberturaBean.cobertura.resultado}" />
+													</p:calendar>
+												</p:column>
+												<p:column>
+													<p:calendar size="10" pattern="dd/MM/yyyy" disabled="true" />
+												</p:column>
+											</p:row>
+											<p:row>
+												<p:column>
+													<p:outputLabel for="resultado" value="Resultado" />
+												</p:column>
+												<p:column>
+													<p:outputLabel value="Data do Parto" />
+												</p:column>
+											</p:row>
+											<p:row>
+												<p:column>
+													<p:selectOneMenu id="resultado" autoWidth="false"
+														style="width: 80px;"
+														validator="resultadoDiagnosticoValidation"
+														value="#{fichaCoberturaBean.cobertura.resultado}">
+														<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+														<f:selectItem itemLabel="Positivo" itemValue="POSITIVO" />
+														<f:selectItem itemLabel="Negativo" itemValue="NEGATIVO" />
+														<p:ajax event="change" process="@this" />
+														<f:attribute name="dataDiagnostico"
+															value="#{fichaCoberturaBean.cobertura.dtDiagnostico}" />
+													</p:selectOneMenu>
+												</p:column>
+												<p:column>
+													<p:calendar size="10" pattern="dd/MM/yyyy" disabled="true"
+														value="#{fichaCoberturaBean.cobertura.dtParto}" />
+												</p:column>
+											</p:row>
+										</p:panelGrid>
+									</p:fieldset>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:inputText id="partida" size="12" maxlength="10"
+										disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+										value="#{fichaCoberturaBean.cobertura.partida}" />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu autoWidth="false" style="width: 150px;"
+										id="reprodutor" required="true"
+										disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+										requiredMessage="Selecione um reprodutor"
+										value="#{fichaCoberturaBean.cobertura.reprodutor}">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{fichaCoberturaBean.reprodutores}"
+											var="o" itemLabel="#{o.nome}" itemValue="#{o.nome}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<p:outputLabel for="condCorporal" value="Condição corporal" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<p:selectOneMenu autoWidth="false" style="width: 275px;"
+										id="condCorporal" required="true"
+										disabled="#{fichaCoberturaBean.cobertura.id!=null}"
+										requiredMessage="Selecione um condição corporal"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{fichaCoberturaBean.cobertura.condicaoCorporal}">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{fichaCoberturaBean.condicoesCorporal}"
+											var="o" itemLabel="#{o.nome}" itemValue="#{o}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<p:outputLabel value="Observação" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<p:inputTextarea rows="2" style="width: 295px;"
+										value="#{fichaCoberturaBean.cobertura.obsCobertura}" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+
+
+				<p:toolbar style="margin-top: 10px" styleClass="semPreenchimento">
+					<p:toolbarGroup style="margin-left: 15px;">
+						<p:commandButton icon="fa fa-question-circle" iconPos="right"
+							title="Informação" oncomplete="PF('cadastroInfo').show()"
+							process="@this">
+							<p:resetInput target="form-cadastro-info" />
+						</p:commandButton>
+					</p:toolbarGroup>
+					<p:toolbarGroup align="right" style="margin-right: 10px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-right: 3px;"
+							oncomplete="PF('dialogCadastro').hide()" immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							update=":form-cadastro :form-cadastro:tabview :form-table :form-menu"
+							action="#{fichaCoberturaBean.salvar}" id="salvarCommandButton"
+							oncomplete="if(args.sucesso == true) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Exclusão Animal" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Tem certeza que deseja excluir a Animal:" />
+					<p:outputLabel
+						value="#{fichaCoberturaBean.cobertura.id} - #{fichaCoberturaBean.cobertura.descricao} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{fichaCoberturaBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="Informação" widgetVar="cadastroInfo" modal="true"
+			resizable="false" draggable="true" closeOnEscape="true" width="350"
+			height="190" appendTo="@(body)">
+			<h:form id="form-cadastro-info">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Observação" style="color: red;" />
+					<p:outputLabel
+						value="Depois de cadastrado o registro de
+					Cobertura/Diagnóstico só é permitido alteração dos campos de
+					Observação e Diagnóstico (desde que o parto ainda não tenha sido
+					cadastrado). Caso algum outro tipo de informação esteja incorreto,
+					será necessário excluir o registro e incluí-lo novamente" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button icon="fa fa-thumbs-up"
+						style="margin-right:8px; margin-top: 20px"
+						onclick="PF('cadastroInfo').hide(); return false;" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Grupo de Usuário</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{grupoUsuarioBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Grupo de Usuário</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{grupoUsuarioBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{grupoUsuarioBean.editar}"
+						disabled="#{grupoUsuarioBean.grupoUsuarioSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{grupoUsuarioBean.editar}"
+						disabled="#{grupoUsuarioBean.grupoUsuarioSelecionado == null}">
+					</p:commandButton>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-grupoUsuario"
+				value="#{grupoUsuarioBean.grupoUsuarios}" var="grupoUsuario"
+				style="margin-top: 5px"
+				emptyMessage="Nenhuma Grupo de Usuário encontrada." rows="10"
+				paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{grupoUsuarioBean.grupoUsuarioSelecionado}"
+				rowKey="#{grupoUsuario.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{grupoUsuario.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{grupoUsuario.id}" />
+				</p:column>
+
+				<p:column headerText="Nome" style="width: 200px"
+					sortBy="#{grupoUsuario.nome}">
+					<h:outputText value="#{grupoUsuario.nome}" />
+				</p:column>
+				
+				<p:column headerText="Descrição" style="width: 400px"
+					sortBy="#{grupoUsuario.descricao}">
+					<h:outputText value="#{grupoUsuario.descricao}" />
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{grupoUsuario.ativo}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{grupoUsuario.ativo ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Grupo de Usuário"
+			widgetVar="dialogCadastro" modal="true" resizable="false"
+			draggable="true" id="dgCadastro" closeOnEscape="true" width="430"
+			appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:panelGrid columns="2" styleClass="semBorda">
+
+					<p:outputLabel for="txtId" value="ID:" />
+					<p:inputText id="txtId" size="5" style="text-align:center;"
+						disabled="true" value="#{grupoUsuarioBean.grupoUsuario.id}" />
+
+					<p:outputLabel for="txtNome" value="Nome:" />
+					<p:inputText id="txtNome" size="35" maxlength="5" required="true"
+						requiredMessage="Informe o nome"
+						value="#{grupoUsuarioBean.grupoUsuario.nome}" />
+						
+						<p:outputLabel for="txtDesc" value="Descrição:" />
+					<p:inputText id="txtDesc" size="35" maxlength="35" required="true"
+						requiredMessage="Informe o descrição"
+						value="#{grupoUsuarioBean.grupoUsuario.descricao}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox
+						value="#{grupoUsuarioBean.grupoUsuario.ativo}" />
+
+				</p:panelGrid>
+
+				<h:panelGrid columns="2" style="margin-top: 20px;">
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						update="form-cadastro, form-table, form-menu"
+						action="#{grupoUsuarioBean.salvar}"
+						oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-left:0px;" oncomplete="PF('dialogCadastro').hide()"
+						immediate="true" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Exclusão Grupo de Usuário"
+			widgetVar="confirmacaoExclusao" modal="true" resizable="false"
+			draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Grupo de Usuário:" />
+					<p:outputLabel
+						value="#{grupoUsuarioBean.grupoUsuario.id} - #{grupoUsuarioBean.grupoUsuario.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{grupoUsuarioBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

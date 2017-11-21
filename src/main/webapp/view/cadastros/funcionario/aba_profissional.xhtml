@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+		<p:panelGrid styleClass="semBorda" style="padding: 0px;">
+
+			<p:row>
+				<p:column colspan="1">
+					<p:outputLabel for="txtProf" value="Exerce atividade profissional:" />
+				</p:column>
+				<p:column colspan="1">
+					<p:outputLabel for="txtOcupacao" value="Ocupação:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column colspan="0">
+					<p:selectOneRadio id="txtProf"
+						value="#{funcionarioBean.funcionario.trabalha}">
+						<f:selectItem itemLabel="SIM" itemValue="true" />
+						<f:selectItem itemLabel="NÃO" itemValue="false" />
+					</p:selectOneRadio>
+				</p:column>
+				<p:column colspan="3">
+					<p:inputText id="txtOcupacao"
+						value="#{funcionarioBean.funcionario.ocupacao}" style="width:97%;" />
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column colspan="2">
+					<p:outputLabel for="txtEmpresa"
+						value="Instituição em que trabalha:" />
+				</p:column>
+				<p:column colspan="3">
+					<p:outputLabel for="txtTelefone" value="Telefone e Contato:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column colspan="2">
+					<p:inputText id="txtEmpresa" value="#{funcionarioBean.funcionario.nomeEmpresa}"
+						style="width:97%;" />
+				</p:column>
+				<p:column colspan="3">
+					<p:inputText id="txtTelefone"
+						value="#{funcionarioBean.funcionario.empTelefone}" style="width:97%;" />
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column colspan="2">
+					<p:outputLabel for="txtCep" value="Cep:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column colspan="2">
+					<p:inputMask id="txtCep" value="#{funcionarioBean.funcionario.empCep}"
+						size="10" mask="99999-999" />
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column colspan="2">
+					<p:outputLabel for="txtEndereco" value="Endereço:" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="txtNum" value="Número:" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="txtComplemento" value="Complemento:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column colspan="2">
+					<p:inputText id="txtEndereco"
+						value="#{funcionarioBean.funcionario.empEndereco}" style="width:97%;" />
+				</p:column>
+				<p:column>
+					<p:inputText id="txtNum" value="#{funcionarioBean.funcionario.empNumero}"
+						size="4" />
+				</p:column>
+				<p:column>
+					<p:inputText id="txtComplemento"
+						value="#{funcionarioBean.funcionario.empComplemento}" />
+				</p:column>
+			</p:row>
+
+
+			<p:row>
+				<p:column colspan="1">
+					<p:outputLabel for="txtBairro" value="Bairro:" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="txtEstado" value="Estado:" />
+				</p:column>
+				<p:column colspan="2">
+					<p:outputLabel for="txtCidade" value="Cidade:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column colspan="1">
+					<p:inputText id="txtBairro"
+						value="#{funcionarioBean.funcionario.empBairro}" size="25" />
+				</p:column>
+				<p:column>
+					<p:selectOneMenu id="txtEstado"
+						value="#{funcionarioBean.funcionario.empUf}" style="width: 50px;">
+						<f:selectItem itemLabel="Selecione..." value="#{null}" />
+						<f:selectItems value="#{funcionarioBean.estados}" var="obj"
+							itemLabel="#{obj.sigla}" itemValue="#{obj}" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column colspan="2">
+					<p:inputText id="txtCidade"
+						value="#{funcionarioBean.funcionario.empCidade}" style="width:97%;" />
+				</p:column>
+			</p:row>
+
+		</p:panelGrid>
+
+</ui:composition>

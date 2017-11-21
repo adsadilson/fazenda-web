@@ -1,0 +1,241 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem de tanque</h2>
+
+	<h:form id="frm-menu-tanque">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadTanque').show()" process="@this"
+					update=":tabView:frm-cadastro-tanque"
+					action="#{tanqueBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-tanque" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadTanque').show()" process="@this"
+					update=":tabView:frm-cadastro-tanque" action="#{tanqueBean.editar}"
+					disabled="#{tanqueBean.tanqueSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-tanque" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoTanque').show()" process="@this"
+					update=":tabView:frm-excluir-tanque" action="#{tanqueBean.editar}"
+					disabled="#{tanqueBean.tanqueSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-tanque">
+		<p:dataTable id="tbl-tanque" value="#{tanqueBean.tanques}"
+			var="tanque" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{tanqueBean.tanqueSelecionado}" rowKey="#{tanque.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-tanque, :tabView:frm-tabela-tanque" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-tanque, :tabView:frm-tabela-tanque" />
+
+			<p:column headerText="Codigo"
+				style="width: 65px; text-align: center;" sortBy="#{tanque.id}">
+				<h:outputText value="#{tanque.id}" />
+			</p:column>
+
+			<p:column headerText="Tanque" style="width: 250px"
+				sortBy="#{tanque.nome}">
+				<h:outputText value="#{tanque.nome}" />
+			</p:column>
+
+			<p:column headerText="Capacidade"
+				style="width: 100px; text-align:right" sortBy="#{tanque.capacidade}">
+				<h:outputText value="#{tanque.capacidade}" />
+			</p:column>
+
+			<p:column headerText="Fabricante" style="width: 200px"
+				sortBy="#{tanque.fabricante}">
+				<h:outputText value="#{tanque.fabricante}" />
+			</p:column>
+
+			<p:column headerText="Nº Série" style="width: 80px"
+				sortBy="#{tanque.serie}">
+				<h:outputText value="#{tanque.serie}" />
+			</p:column>
+
+			<p:column headerText="Valor R$"
+				style="width: 100px; text-align:right" sortBy="#{tanque.valor}">
+				<h:outputText value="#{tanque.valor}">
+					<f:convertNumber type="currency" currencySymbol="RS" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Cadastrado"
+				style="width: 100px; text-align:center"
+				sortBy="#{tanque.dtCadastro}">
+				<h:outputText value="#{tanque.dtCadastro}">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{tanque.status}">
+				<h:outputText value="#{tanque.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão  de Tanque"
+		widgetVar="confirmacaoExclusaoTanque" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-tanque">
+			<p:panelGrid id="pExcluirTanque" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir  Tanque:" />
+				<p:outputLabel
+					value="#{tanqueBean.tanque.id} - #{tanqueBean.tanque.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoTanque').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{tanqueBean.excluir}"
+					update=":tabView:frm-menu-tanque, :tabView:frm-tabela-tanque"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoTanque').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro  Tanque" widgetVar="dialogCadTanque"
+		modal="true" resizable="false" draggable="true" id="dgCadTanque"
+		closeOnEscape="true" width="auto" appendTo="@(body)">
+		<h:form id="frm-cadastro-tanque">
+			<p:panelGrid id="panelCadastroTanque" styleClass="semBorda">
+
+				<p:row>
+					<p:column>
+						<p:outputLabel for="txtIdTanque" value="ID" />
+					</p:column>
+					<p:column>
+						<p:outputLabel for="txtNomeTanque" value="Nome" />
+					</p:column>
+					<p:column>
+						<p:outputLabel for="txtCapacidade" value="Capacidade (Litros)" />
+					</p:column>
+					<p:column>
+						<p:outputLabel for="txtCadastro" value="Cadastro" />
+					</p:column>
+					<p:column>
+						<p:outputLabel style="margin-left:10px" value="Ativo" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column>
+						<p:inputText id="txtIdTanque" size="3" style="text-align:center;"
+							disabled="true" value="#{tanqueBean.tanque.id}" />
+					</p:column>
+					<p:column>
+						<p:inputText id="txtNomeTanque" size="31" maxlength="35"
+							required="true" requiredMessage="Informe o nome"
+							value="#{tanqueBean.tanque.nome}" />
+					</p:column>
+					<p:column>
+						<p:inputText id="txtCapacidade" size="15" required="true"
+							requiredMessage="Informe a capacidade"
+							value="#{tanqueBean.tanque.capacidade}" />
+					</p:column>
+					<p:column>
+						<p:calendar id="txtCadastro" size="10" required="true"
+							requiredMessage="Informe a data de cadastro"
+							value="#{tanqueBean.tanque.dtCadastro}" pattern="dd/MM/yyyy" />
+					</p:column>
+					<p:column>
+						<p:selectBooleanCheckbox style="margin-left:10px"
+							value="#{tanqueBean.tanque.status}" />
+					</p:column>
+				</p:row>
+
+
+				<p:row>
+					<p:column colspan="2">
+						<p:outputLabel for="txtFabricante" value="Fabricante" />
+					</p:column>
+					<p:column>
+						<p:outputLabel for="txtSerie" value="Nº Série" />
+					</p:column>
+					<p:column>
+						<p:outputLabel for="txtValor" value="Valor R$" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column colspan="2">
+						<p:inputText id="txtFabricante" style="width:97%" maxlength="35"
+							value="#{tanqueBean.tanque.fabricante}" />
+					</p:column>
+					<p:column>
+						<p:inputText id="txtSerie" size="15"
+							value="#{tanqueBean.tanque.serie}" />
+					</p:column>
+					<p:column>
+						<p:inputNumber id="txtValor" size="10"
+							value="#{tanqueBean.tanque.valor}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column colspan="5">
+						<p:outputLabel for="txtObsTanque" value="Observação" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column colspan="5">
+						<p:inputTextarea id="txtObsTanque" rows="3" style="width: 98%;"
+							value="#{tanqueBean.tanque.obs}" />
+					</p:column>
+				</p:row>
+
+
+
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-tanque :tabView:frm-tabela-tanque :tabView:frm-menu-tanque"
+						oncomplete="PF('dialogCadTanque').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonTanque" action="#{tanqueBean.salvar}"
+						update=":tabView:frm-cadastro-tanque :tabView:frm-tabela-tanque :tabView:frm-menu-tanque"
+						oncomplete="if(!args.validationFailed) PF('dialogCadTanque').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonTanque" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

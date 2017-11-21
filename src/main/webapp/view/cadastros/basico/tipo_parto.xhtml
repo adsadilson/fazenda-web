@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem tipo parto</h2>
+
+	<h:form id="frm-menu-parto">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadTipoParto').show()" process="@this"
+					update=":tabView:frm-cadastro-parto"
+					action="#{tipoPartoBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-parto" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadTipoParto').show()" process="@this"
+					update=":tabView:frm-cadastro-parto"
+					action="#{tipoPartoBean.editar}"
+					disabled="#{tipoPartoBean.tipoPartoSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-parto" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoParto').show()" process="@this"
+					update=":tabView:frm-excluir-parto"
+					action="#{tipoPartoBean.editar}"
+					disabled="#{tipoPartoBean.tipoPartoSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-parto">
+		<p:dataTable id="tbl-tipoParto" value="#{tipoPartoBean.tipoPartos}"
+			var="tipoParto" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{tipoPartoBean.tipoPartoSelecionado}"
+			rowKey="#{tipoParto.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-parto, :tabView:frm-tabela-parto" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-parto, :tabView:frm-tabela-parto" />
+
+			<p:column headerText="Codigo"
+				style="width: 100px; text-align: center;" sortBy="#{tipoParto.id}">
+				<h:outputText value="#{tipoParto.id}" />
+			</p:column>
+
+			<p:column headerText="Tipo de Parto" style="width: 250px"
+				sortBy="#{tipoParto.nome}">
+				<h:outputText value="#{tipoParto.nome}" />
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{tipoParto.status}">
+				<h:outputText value="#{tipoParto.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão Tipo de Parto"
+		widgetVar="confirmacaoExclusaoParto" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-parto">
+			<p:panelGrid id="pExcluirParto" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir Tipo Parto:" />
+				<p:outputLabel
+					value="#{tipoPartoBean.tipoParto.id} - #{tipoPartoBean.tipoParto.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoParto').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{tipoPartoBean.excluir}"
+					update=":tabView:frm-menu-parto, :tabView:frm-tabela-parto"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoParto').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro Tipo Parto" widgetVar="dialogCadTipoParto"
+		modal="true" resizable="false" draggable="true" id="dgCadTipoParto"
+		closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-cadastro-parto">
+			<p:panelGrid id="panelCadastroParto" columns="3"
+				styleClass="semBorda">
+
+				<p:outputLabel for="txtIdParto" value="ID" />
+				<p:outputLabel for="txtNomeParto" value="Nome" />
+				<p:outputLabel style="margin-left:10px" value="Ativo" />
+
+				<p:inputText id="txtIdParto" size="3" style="text-align:center;"
+					disabled="true" value="#{tipoPartoBean.tipoParto.id}" />
+				<p:inputText id="txtNomeParto" size="31" maxlength="35"
+					required="true" requiredMessage="Informe o nome"
+					value="#{tipoPartoBean.tipoParto.nome}" />
+				<p:selectBooleanCheckbox style="margin-left:10px"
+					value="#{tipoPartoBean.tipoParto.status}" />
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-parto :tabView:frm-tabela-parto :tabView:frm-menu-parto"
+						oncomplete="PF('dialogCadTipoParto').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonParto" action="#{tipoPartoBean.salvar}"
+						update=":tabView:frm-cadastro-parto :tabView:frm-tabela-parto :tabView:frm-menu-parto"
+						oncomplete="if(!args.validationFailed) PF('dialogCadTipoParto').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonParto" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

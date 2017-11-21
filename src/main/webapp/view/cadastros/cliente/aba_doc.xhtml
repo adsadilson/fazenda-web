@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+		<p:panelGrid styleClass="semBorda" style="padding: 0px;">
+			<p:row>
+				<p:column colspan="2">
+					<p:outputLabel for="txtTipoDoc" value="Tipo de Documento:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column colspan="2">
+					<p:selectOneMenu id="txtTipoDoc"
+						value="#{clienteBean.cliente.tipoDoc}" style="width: 250px;">
+						<f:selectItem itemLabel="Selecione..." value="#{null}" />
+						<f:selectItems value="#{clienteBean.tipoDocs}" var="obj"
+							itemLabel="#{obj.descricao}" itemValue="#{obj}" />
+					</p:selectOneMenu>
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column>
+					<p:outputLabel for="txtNumDoc" value="Número:" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="txtEmissao" value="Data de Emissão:" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="txtOrgao" value="Órgão emissor:" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="txtUfDoc" value="Estado emissor:" />
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column>
+					<p:inputText id="txtNumDoc" value="#{clienteBean.cliente.numDoc}"
+						size="13" />
+				</p:column>
+				<p:column>
+					<p:calendar id="txtEmissao"
+						value="#{clienteBean.cliente.dataEmissao}" size="13"
+						locale="pt_BR" pattern="dd/MM/yyyy" />
+				</p:column>
+				<p:column>
+					<p:inputText id="txtOrgao"
+						value="#{clienteBean.cliente.orgaoEmissor}" size="13" />
+				</p:column>
+				<p:column>
+					<p:selectOneMenu id="txtUfDoc"
+						value="#{clienteBean.cliente.ufEmissor}" style="width: 100px;">
+						<f:selectItem itemLabel="Selecione..." value="#{null}" />
+						<f:selectItems value="#{clienteBean.estados}" var="obj"
+							itemLabel="#{obj.sigla}" itemValue="#{obj.sigla}" />
+					</p:selectOneMenu>
+				</p:column>
+			</p:row>
+
+		</p:panelGrid>
+
+</ui:composition>

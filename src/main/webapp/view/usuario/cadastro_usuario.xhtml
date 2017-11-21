@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Novo Usuário</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="codigo" value="#{usuarioBean.id}" />
+			<f:viewAction action="#{usuarioBean.carregarEdicao}" />
+		</f:metadata>
+
+		<h1>#{usuarioBean.usuario.id > 0 ? 'Edição de Usuario' : 'Novo Usuário'}</h1>
+
+		<h:form id="form-cadastro">
+
+			<p:toolbar styleClass="semPreenchimento" style="margin-bottom:10px;">
+
+				<p:toolbarGroup>
+					<p:commandButton icon="salvar-icon" value="Salvar" id="btnSalvar"
+						action="#{usuarioBean.salvar}" update="form-cadastro, :form-grupo" />
+					<p:button icon="voltar-icon" value="Voltar"
+						style="margin-left:5px;"
+						outcome="/view/usuario/pesquisa_usuario.xhtml" />
+				</p:toolbarGroup>
+
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+
+			</p:toolbar>
+
+
+			<p:panel>
+				<p:panelGrid columns="2" style="width: 100%; margin-top: 10px;"
+					columnClasses="rotulo, campo" styleClass="semBorda" >
+
+					<p:outputLabel value="ID:" />
+					<p:inputText size="5" style="text-align:center;"
+						value="#{usuarioBean.usuario.id}" disabled="true" />
+
+					<p:outputLabel for="nome" value="Login:" />
+					<p:inputText id="nome" size="40" required="true"
+						requiredMessage="Informe o login" maxlength="35"
+						value="#{usuarioBean.usuario.nome}" />
+
+					<p:outputLabel for="email" value="E-mail:" />
+					<p:inputText id="email" size="40" required="true"
+						requiredMessage="Informe o e-mail"
+						value="#{usuarioBean.usuario.email}" />
+
+					<p:outputLabel for="senha" value="Senha:" />
+					<p:password id="senha" value="#{usuarioBean.usuario.senha}"
+						required="true" requiredMessage="Informe a senha" maxlength="16"
+						feedback="true" weakLabel="Fraca" goodLabel="Boa"
+						strongLabel="Forte" match="confirmacaoSenha" redisplay="true" />
+
+					<p:outputLabel value="Confirme a senha" for="confirmacaoSenha" />
+					<p:password id="confirmacaoSenha" required="true"
+						value="#{usuarioBean.confirmacaoSenha}"
+						requiredMessage="Senha não conferir" redisplay="true" />
+
+					<p:spacer />
+					<p:selectBooleanCheckbox itemLabel="Ativo"
+						value="#{usuarioBean.usuario.ativo}" />
+
+					<p:outputLabel for="grupo" value="Grupo:" />
+					<h:panelGroup>
+						<h:panelGrid columns="2" styleClass="semBorda">
+							<p:selectOneMenu id="grupo" style="width:180px;"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{usuarioBean.grupoSelecionado}">
+								<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+								<f:selectItems value="#{usuarioBean.grupos}" var="g"
+									itemLabel="#{g.nome}" itemValue="#{g}" />
+							</p:selectOneMenu>
+							<p:commandButton icon="adicionar-icon" value="Add"
+								process="@this, grupo" update=":form-grupo, form-cadastro:grupo"
+								action="#{usuarioBean.addGrupo}" style="margin-left:10px;" />
+						</h:panelGrid>
+					</h:panelGroup>
+				</p:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="form-grupo" style="margin-top:15px;">
+			<p:growl autoUpdate="true" />
+			<p:dataTable id="tabela" widgetVar="tbl" style="height:200px;"
+				emptyMessage="Nenhum registro encontrado." paginator="true" rows="4"
+				paginatorPosition="bottom" paginatorAlwaysVisible="false"
+				value="#{usuarioBean.usuario.grupos}" var="obj" reflow="true">
+
+				<p:column headerText="Ações" width="70" style="text-align: center">
+					<p:commandButton icon="ui-icon-trash" title="Excluir Registro"
+						styleClass="semPreenchimento" process="@this"
+						update=":form-Exclusao"
+						actionListener="#{usuarioBean.prepararExclusaoGrupo(obj)}"
+						oncomplete="PF('confirmacaoExclusao').show();">
+					</p:commandButton>
+				</p:column>
+
+				<p:column headerText="Grupo" style="text-align: left; width:200px;"
+					sortBy="#{obj.nome}">
+					<h:outputText value="#{obj.nome}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="text-align: left"
+					sortBy="#{obj.descricao}">
+					<h:outputText value="#{obj.descricao}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+
+		<p:dialog header="Exclusão de Grupo" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="340" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Tem certeza que deseja Grupo:" />
+					<p:outputLabel
+						value="#{usuarioBean.grupoSelecionado.id} - #{usuarioBean.grupoSelecionado.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:5px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{usuarioBean.removerGrupo}"
+						update="form-grupo"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>

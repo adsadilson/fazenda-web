@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem motivo venda</h2>
+
+	<h:form id="frm-menu-motivo-veda">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadMotivoVenda').show()" process="@this"
+					update=":tabView:frm-cadastro-motivo-veda"
+					action="#{motivoVendaBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-motivo-veda" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadMotivoVenda').show()" process="@this"
+					update=":tabView:frm-cadastro-motivo-veda"
+					action="#{motivoVendaBean.editar}"
+					disabled="#{motivoVendaBean.motivoVendaSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-motivo-veda" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoMotivoVenda').show()" process="@this"
+					update=":tabView:frm-excluir-motivo-veda"
+					action="#{motivoVendaBean.editar}"
+					disabled="#{motivoVendaBean.motivoVendaSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-motivo-veda">
+		<p:dataTable id="tbl-motivoVenda" value="#{motivoVendaBean.motivoVendas}"
+			var="motivoVenda" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{motivoVendaBean.motivoVendaSelecionado}"
+			rowKey="#{motivoVenda.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-motivo-veda, :tabView:frm-tabela-motivo-veda" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-motivo-veda, :tabView:frm-tabela-motivo-veda" />
+
+			<p:column headerText="Codigo"
+				style="width: 100px; text-align: center;" sortBy="#{motivoVenda.id}">
+				<h:outputText value="#{motivoVenda.id}" />
+			</p:column>
+
+			<p:column headerText="Motivo Venda" style="width: 250px"
+				sortBy="#{motivoVenda.nome}">
+				<h:outputText value="#{motivoVenda.nome}" />
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{motivoVenda.status}">
+				<h:outputText value="#{motivoVenda.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão Motivo Venda"
+		widgetVar="confirmacaoExclusaoMotivoVenda" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-motivo-veda">
+			<p:panelGrid id="pExcluirMotivoVenda" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir  MotivoVenda:" />
+				<p:outputLabel
+					value="#{motivoVendaBean.motivoVenda.id} - #{motivoVendaBean.motivoVenda.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoMotivoVenda').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{motivoVendaBean.excluir}"
+					update=":tabView:frm-menu-motivo-veda, :tabView:frm-tabela-motivo-veda"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoMotivoVenda').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro Motivo Venda" widgetVar="dialogCadMotivoVenda"
+		modal="true" resizable="false" draggable="true" id="dgCadMotivoVenda"
+		closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-cadastro-motivo-veda">
+			<p:panelGrid id="panelCadastroMotivoVenda" columns="3"
+				styleClass="semBorda">
+
+				<p:outputLabel for="txtIdMotivoVenda" value="ID" />
+				<p:outputLabel for="txtNomeMotivoVenda" value="Nome" />
+				<p:outputLabel style="margin-left:10px" value="Ativo" />
+
+				<p:inputText id="txtIdMotivoVenda" size="3" style="text-align:center;"
+					disabled="true" value="#{motivoVendaBean.motivoVenda.id}" />
+				<p:inputText id="txtNomeMotivoVenda" size="31" maxlength="35"
+					required="true" requiredMessage="Informe o nome"
+					value="#{motivoVendaBean.motivoVenda.nome}" />
+				<p:selectBooleanCheckbox style="margin-left:10px"
+					value="#{motivoVendaBean.motivoVenda.status}" />
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-motivo-veda :tabView:frm-tabela-motivo-veda :tabView:frm-menu-motivo-veda"
+						oncomplete="PF('dialogCadMotivoVenda').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonMotivoVenda" action="#{motivoVendaBean.salvar}"
+						update=":tabView:frm-cadastro-motivo-veda :tabView:frm-tabela-motivo-veda :tabView:frm-menu-motivo-veda"
+						oncomplete="if(!args.validationFailed) PF('dialogCadMotivoVenda').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonMotivoVenda" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

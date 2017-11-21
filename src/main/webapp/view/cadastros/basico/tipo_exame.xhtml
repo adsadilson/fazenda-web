@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem tipo exame</h2>
+
+	<h:form id="frm-menu-exame">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadTipoExame').show()" process="@this"
+					update=":tabView:frm-cadastro-exame"
+					action="#{tipoExameBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-exame" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadTipoExame').show()" process="@this"
+					update=":tabView:frm-cadastro-exame"
+					action="#{tipoExameBean.editar}"
+					disabled="#{tipoExameBean.tipoExameSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-exame" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoExame').show()" process="@this"
+					update=":tabView:frm-excluir-exame"
+					action="#{tipoExameBean.editar}"
+					disabled="#{tipoExameBean.tipoExameSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-exame">
+		<p:dataTable id="tbl-tipoExame" value="#{tipoExameBean.tipoExames}"
+			var="tipoExame" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{tipoExameBean.tipoExameSelecionado}"
+			rowKey="#{tipoExame.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-exame, :tabView:frm-tabela-exame" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-exame, :tabView:frm-tabela-exame" />
+
+			<p:column headerText="Codigo"
+				style="width: 100px; text-align: center;" sortBy="#{tipoExame.id}">
+				<h:outputText value="#{tipoExame.id}" />
+			</p:column>
+
+			<p:column headerText="Tipo de Exame" style="width: 250px"
+				sortBy="#{tipoExame.nome}">
+				<h:outputText value="#{tipoExame.nome}" />
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{tipoExame.status}">
+				<h:outputText value="#{tipoExame.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão Tipo de Exame"
+		widgetVar="confirmacaoExclusaoExame" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-exame">
+			<p:panelGrid id="pExcluirExame" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir Tipo Exame:" />
+				<p:outputLabel
+					value="#{tipoExameBean.tipoExame.id} - #{tipoExameBean.tipoExame.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoExame').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{tipoExameBean.excluir}"
+					update=":tabView:frm-menu-exame, :tabView:frm-tabela-exame"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoExame').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro Tipo Exame" widgetVar="dialogCadTipoExame"
+		modal="true" resizable="false" draggable="true" id="dgCadTipoExame"
+		closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-cadastro-exame">
+			<p:panelGrid id="panelCadastroExame" columns="3"
+				styleClass="semBorda">
+
+				<p:outputLabel for="txtIdExame" value="ID" />
+				<p:outputLabel for="txtNomeExame" value="Nome" />
+				<p:outputLabel style="margin-left:10px" value="Ativo" />
+
+				<p:inputText id="txtIdExame" size="3" style="text-align:center;"
+					disabled="true" value="#{tipoExameBean.tipoExame.id}" />
+				<p:inputText id="txtNomeExame" size="31" maxlength="35"
+					required="true" requiredMessage="Informe o nome"
+					value="#{tipoExameBean.tipoExame.nome}" />
+				<p:selectBooleanCheckbox style="margin-left:10px"
+					value="#{tipoExameBean.tipoExame.status}" />
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-exame :tabView:frm-tabela-exame :tabView:frm-menu-exame"
+						oncomplete="PF('dialogCadTipoExame').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonExame" action="#{tipoExameBean.salvar}"
+						update=":tabView:frm-cadastro-exame :tabView:frm-tabela-exame :tabView:frm-menu-exame"
+						oncomplete="if(!args.validationFailed) PF('dialogCadTipoExame').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonExame" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

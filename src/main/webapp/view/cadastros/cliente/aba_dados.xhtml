@@ -1,0 +1,169 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<p:panelGrid styleClass="semBorda" style="padding: 0px;">
+		<p:row>
+			<p:column colspan="2">
+				<p:outputLabel for="txtNome" value="Nome completo" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtTipoPessao" value="Tipo" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtCpf" value="Cpf ou Cnpj" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column colspan="2">
+				<p:inputText id="txtNome" value="#{clienteBean.cliente.nome}"
+					required="true" requiredMessage="Informe o nome" style="width:97%;" />
+			</p:column>
+			<p:column>
+				<p:selectOneMenu id="txtTipoPessao"
+					value="#{clienteBean.cliente.tipoPessoa}" required="true"
+					requiredMessage="Informe o tipo" style="width: 100px;">
+					<f:selectItem itemLabel="Selecione..." value="#{null}" />
+					<f:selectItems value="#{clienteBean.tipoPessoas}" var="obj"
+						itemLabel="#{obj.descricao}" itemValue="#{obj}" />
+					<p:ajax event="change" process="@this" update="textTipo" />
+				</p:selectOneMenu>
+			</p:column>
+			<p:column>
+				<h:panelGroup id="textTipo">
+					<!-- <p:focus context="textTipo" /> -->
+					<p:inputMask id="txtCpf"
+						rendered='#{clienteBean.cliente.tipoPessoa=="F"}'
+						mask="999.999.999-99"
+						value="#{clienteBean.cliente.cpfCnpj}" required="true"
+						requiredMessage="Informe o CNPJ ou CPF" style="width: 140px;" />
+					<p:inputMask id="txtCpf2"
+						rendered='#{clienteBean.cliente.tipoPessoa=="J"}'
+						mask="99.999.999/9999-99"
+						value="#{clienteBean.cliente.cpfCnpj}" required="true"
+						requiredMessage="Informe o CNPJ ou CPF" style="width: 140px;" />
+				</h:panelGroup>
+			</p:column>
+		</p:row>
+
+		<p:row>
+			<p:column colspan="2">
+				<p:outputLabel for="txtEmial" value="Email" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtNascimento" value="Data Nascimento" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtNacionalidade" value="Nacionalidade" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column colspan="2">
+				<p:inputText id="txtEmial" value="#{clienteBean.cliente.email}"
+					style="width:97%;" />
+			</p:column>
+			<p:column>
+				<p:calendar id="txtNascimento"
+					value="#{clienteBean.cliente.nascimento}" size="13" locale="pt_BR"
+					pattern="dd/MM/yyyy" />
+			</p:column>
+			<p:column>
+				<p:inputText id="txtNacionalidade"
+					value="#{clienteBean.cliente.nacionalidade}" size="15" />
+			</p:column>
+		</p:row>
+
+		<p:row>
+			<p:column>
+				<p:outputLabel for="txtCelular" value="Celular" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtFone" value="Telefone" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtTelefone2" value="Telefone 2" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtContato" value="Contato" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column>
+				<p:inputMask id="txtCelular" value="#{clienteBean.cliente.celular}"
+					mask="(99)?99999-9999" size="13" />
+			</p:column>
+			<p:column>
+				<p:inputMask id="txtFone" value="#{clienteBean.cliente.telefone}"
+					mask="(99)?99999-9999" size="18" />
+			</p:column>
+			<p:column>
+				<p:inputMask id="txtTelefone2"
+					value="#{clienteBean.cliente.telefone2}" size="13"
+					mask="(99)?99999-9999" />
+			</p:column>
+			<p:column>
+				<p:inputText id="txtContato" value="#{clienteBean.cliente.contato}"
+					size="15" />
+			</p:column>
+		</p:row>
+
+		<p:row>
+			<p:column>
+				<p:outputLabel for="txtGenero" value="Gênero" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtEstadoCivil" value="Estado Civil" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtConjuge" value="Nome Conjuge" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column>
+				<p:selectOneMenu id="txtGenero" value="#{clienteBean.cliente.sexo}"
+					style="width: 100px;" required="true"
+					requiredMessage="Informe o gênero">
+					<f:selectItem itemLabel="Selecione..." value="#{null}" />
+					<f:selectItems value="#{clienteBean.sexos}" var="obj"
+						itemLabel="#{obj.descricao}" itemValue="#{obj}" />
+				</p:selectOneMenu>
+			</p:column>
+			<p:column>
+				<p:selectOneMenu id="txtEstadoCivil"
+					value="#{clienteBean.cliente.estadoCivil}" required="true"
+					requiredMessage="Informe o estado civil" style="width: 100px;">
+					<f:selectItem itemLabel="Selecione..." value="#{null}" />
+					<f:selectItems value="#{clienteBean.estadoCivis}" var="obj"
+						itemLabel="#{obj.descricao}" itemValue="#{obj}" />
+				</p:selectOneMenu>
+			</p:column>
+			<p:column colspan="2">
+				<p:inputText id="txtConjuge" value="#{clienteBean.cliente.conjuge}"
+					style="width:97%;"  />
+			</p:column>
+		</p:row>
+
+		<p:row>
+			<p:column colspan="2">
+				<p:outputLabel for="txtPai" value="Nome do pai" />
+			</p:column>
+			<p:column colspan="2">
+				<p:outputLabel for="txtMae" value="Nome da mãe" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column colspan="2">
+				<p:inputText id="txtPai" value="#{clienteBean.cliente.pai}"
+					style="width:97%;" />
+			</p:column>
+			<p:column colspan="2">
+				<p:inputText id="txtMae" value="#{clienteBean.cliente.mae}"
+					style="width:97%;" />
+			</p:column>
+		</p:row>
+
+
+	</p:panelGrid>
+</ui:composition>

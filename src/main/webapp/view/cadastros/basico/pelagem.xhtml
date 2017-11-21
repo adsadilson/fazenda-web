@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h2>Listagem de pelagem</h2>
+
+	<h:form id="frm-menu-pelagem">
+		<p:toolbar styleClass="semPreenchimento">
+			<p:toolbarGroup>
+				<p:commandButton icon="novo-icon" value="Novo"
+					oncomplete="PF('dialogCadPelagem').show()" process="@this"
+					update=":tabView:frm-cadastro-pelagem"
+					action="#{pelagemBean.novoCadastro}">
+					<p:resetInput target=":tabView:frm-cadastro-pelagem" />
+				</p:commandButton>
+				<p:commandButton icon="editar-icon" value="Editar"
+					style="margin-left:3px; margin-right: 3px;"
+					oncomplete="PF('dialogCadPelagem').show()" process="@this"
+					update=":tabView:frm-cadastro-pelagem"
+					action="#{pelagemBean.editar}"
+					disabled="#{pelagemBean.pelagemSelecionado == null}">
+					<p:resetInput target=":tabView:frm-cadastro-pelagem" />
+				</p:commandButton>
+				<p:commandButton icon="excluir-icon" value="Excluir"
+					oncomplete="PF('confirmacaoExclusaoPelagem').show()" process="@this"
+					update=":tabView:frm-excluir-pelagem"
+					action="#{pelagemBean.editar}"
+					disabled="#{pelagemBean.pelagemSelecionado == null}">
+				</p:commandButton>
+				<ui:remove>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</ui:remove>
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<p:button value="Fechar" icon="fa fa-power-off"
+					outcome="/home.xhtml" />
+			</p:toolbarGroup>
+		</p:toolbar>
+	</h:form>
+
+	<h:form id="frm-tabela-pelagem">
+		<p:dataTable id="tbl-pelagem" value="#{pelagemBean.pelagems}"
+			var="pelagem" style="margin-top: 5px"
+			styleClass="table-tela-manutecao"
+			emptyMessage="Nenhuma registro encontrada." rows="10"
+			paginator="true" paginatorAlwaysVisible="false"
+			paginatorPosition="bottom" selectionMode="single"
+			selection="#{pelagemBean.pelagemSelecionado}"
+			rowKey="#{pelagem.id}">
+
+			<p:ajax event="rowSelect"
+				update=":tabView:frm-menu-pelagem, :tabView:frm-tabela-pelagem" />
+			<p:ajax event="rowUnselect"
+				update=":tabView:frm-menu-pelagem, :tabView:frm-tabela-pelagem" />
+
+			<p:column headerText="Codigo"
+				style="width: 100px; text-align: center;" sortBy="#{pelagem.id}">
+				<h:outputText value="#{pelagem.id}" />
+			</p:column>
+
+			<p:column headerText="Pelagem" style="width: 250px"
+				sortBy="#{pelagem.nome}">
+				<h:outputText value="#{pelagem.nome}" />
+			</p:column>
+
+			<p:column headerText="Status" style="text-align: left;"
+				sortBy="#{pelagem.status}">
+				<h:outputText value="#{pelagem.status ? 'ATIVO' : 'INATIVO'}">
+				</h:outputText>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:dialog header="Exclusão  de Pelagem"
+		widgetVar="confirmacaoExclusaoPelagem" modal="true" resizable="false"
+		draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-excluir-pelagem">
+			<p:panelGrid id="pExcluirPelagem" columns="1" styleClass="semBorda">
+				<p:outputLabel value="Tem certeza que deseja excluir  Pelagem:" />
+				<p:outputLabel
+					value="#{pelagemBean.pelagem.id} - #{pelagemBean.pelagem.nome} ?" />
+			</p:panelGrid>
+			<p:panelGrid styleClass="semBorda">
+				<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+					onclick="PF('confirmacaoExclusaoPelagem').hide(); return false;" />
+				<p:commandButton value="Sim" action="#{pelagemBean.excluir}"
+					update=":tabView:frm-menu-pelagem, :tabView:frm-tabela-pelagem"
+					oncomplete="if(!args.validationFailed) PF('confirmacaoExclusaoPelagem').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog header="Cadastro  Pelagem" widgetVar="dialogCadPelagem"
+		modal="true" resizable="false" draggable="true" id="dgCadPelagem"
+		closeOnEscape="true" width="400" appendTo="@(body)">
+		<h:form id="frm-cadastro-pelagem">
+			<p:panelGrid id="panelCadastroPelagem" columns="3"
+				styleClass="semBorda">
+
+				<p:outputLabel for="txtIdPelagem" value="ID" />
+				<p:outputLabel for="txtNomePelagem" value="Nome" />
+				<p:outputLabel style="margin-left:10px" value="Ativo" />
+
+				<p:inputText id="txtIdPelagem" size="3" style="text-align:center;"
+					disabled="true" value="#{pelagemBean.pelagem.id}" />
+				<p:inputText id="txtNomePelagem" size="31" maxlength="35"
+					required="true" requiredMessage="Informe o nome"
+					value="#{pelagemBean.pelagem.nome}" />
+				<p:selectBooleanCheckbox style="margin-left:10px"
+					value="#{pelagemBean.pelagem.status}" />
+
+			</p:panelGrid>
+
+			<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+				<p:toolbarGroup align="right" style="margin-right: 0px;">
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-right: 3px;"
+						update=":tabView:frm-cadastro-pelagem :tabView:frm-tabela-pelagem :tabView:frm-menu-pelagem"
+						oncomplete="PF('dialogCadPelagem').hide()" immediate="true" />
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						id="salvarCommandButtonPelagem" action="#{pelagemBean.salvar}"
+						update=":tabView:frm-cadastro-pelagem :tabView:frm-tabela-pelagem :tabView:frm-menu-pelagem"
+						oncomplete="if(!args.validationFailed) PF('dialogCadPelagem').hide()" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:defaultCommand target="salvarCommandButtonPelagem" />
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>

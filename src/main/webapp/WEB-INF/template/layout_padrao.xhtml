@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ui:insert name="metadata" />
+
+<h:head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title><ui:insert name="titulo">SGG</ui:insert></title>
+	<h:outputStylesheet library="css" name="sistema.css" />
+	<h:outputStylesheet library="primefaces" name="grid/grid.css" />
+	<h:outputScript target="body" library="js" name="locale.js" />
+	<h:outputScript target="body" library="js" name="jquery.maskMoney.js" />
+	<h:outputScript target="body" library="js" name="initMaskMoney.js" />
+	<h:outputScript target="body" library="js" name="closeDialog.js" />
+
+
+	<style>
+.ui-layout-north {
+	z-index: 20 !important;
+	overflow: visible;
+}
+
+.ui-layout-north .ui-layout-unit-content {
+	overflow: visible;
+}
+</style>
+
+</h:head>
+
+<h:body>
+
+	<p:ajaxStatus styleClass="ajax-status" onsuccess="configurarMoeda()">
+		<f:facet name="start">
+			<h:graphicImage library="images" name="loading.gif" />
+		</f:facet>
+		<f:facet name="complete">
+			<h:outputText value="" />
+		</f:facet>
+	</p:ajaxStatus>
+
+	<h:form>
+		<p:growl autoUpdate="true" />
+	</h:form>
+
+	<p:layout fullPage="true">
+
+		<p:layoutUnit position="north" size="75" styleClass="fundo-menu">
+
+			<div style="float: left;">
+				<h:link outcome="/home.xhtml">
+					<h:graphicImage library="images" name="logo2.png" height="60px" />
+				</h:link>
+			</div>
+			<div style="width: 700px; margin-left: 70px;">
+				<span
+					style="font-variant: small-caps; font-size: 20px; color: #fff;">
+					Sistema Gestão de Gado</span><br /> <span
+					style="font-variant: small-caps; font-size: 12px; color: #fff;">
+					Versão: 1.00.01</span>
+			</div>
+			<div
+				style="width: 800px; margin-left: 65px; margin-top: 0px; height: 20px;">
+				<h:form style="display: inline-block">
+					<p:menubar styleClass="menu-sistema">
+						<p:submenu label="Cadastros">
+							<p:submenu label="Colaboradores">
+								<p:menuitem value="Clientes"
+									outcome="/view/cadastros/cliente/cliente.xhtml" />
+								<p:menuitem value="Fornecedores"
+									outcome="/view/cadastros/fornecedor/fornecedor.xhtml" />
+								<p:menuitem value="Profissionais"
+									outcome="/view/cadastros/profissional/profissional.xhtml" />
+								<p:menuitem value="Funcionários"
+									outcome="/view/cadastros/funcionario/funcionario.xhtml" />
+								<p:menuitem value="Empresa"
+									outcome="/view/cadastros/empresa/empresa.xhtml" />
+							</p:submenu>
+							<p:menuitem value="Animais"
+								outcome="/view/cadastros/animal.xhtml" />
+							<p:submenu label="Produtos">
+								<p:menuitem value="Produtos"
+									outcome="/view/cadastros/produto/produto.xhtml" />
+								<p:menuitem value="Grupo de Produtos"
+									outcome="/view/cadastros/grupo_produto.xhtml" />
+								<p:menuitem value="Unidade de Media"
+									outcome="/view/cadastros/unidade_medida.xhtml" />
+							</p:submenu>
+							<p:submenu label="Outros">
+								<p:menuitem value="Usuários"
+									outcome="/view/usuario/pesquisa_usuario.xhtml" />
+								<p:menuitem value="Grupo de Usuários"
+									outcome="/view/cadastros/grupo_usuario.xhtml" />
+								<p:menuitem value="Plano de Conta"
+									outcome="/view/cadastros/plano_conta.xhtml" />
+								<p:menuitem value="Cadastros Basicos"
+									outcome="/view/cadastros/basico/outros.xhtml" />
+							</p:submenu>
+						</p:submenu>
+						<p:submenu label="Manutenção">
+							<p:submenu label="Animais">
+								<ui:remove>
+									<p:menuitem value="Compra/Venda"
+										outcome="/view/cadastros/animal.xhtml" />
+									<p:menuitem value="Raça" />
+									<p:menuitem value="Pessagem Corporal" />
+									<p:menuitem value="Animal no Pasto" />
+								</ui:remove>
+								<p:menuitem value="Cobertura"
+									outcome="/view/manutencao/manutencao_cobertura.xhtml" />
+								<p:menuitem value="Parto"
+									outcome="/view/manutencao/manutencao_parto.xhtml" />
+								<p:menuitem value="Secagem"
+									outcome="/view/manutencao/manutencao_secagem.xhtml" />
+								<p:menuitem value="Exame"
+									outcome="/view/manutencao/manutencao_exame.xhtml" />
+								<p:menuitem value="Tratamento"
+									outcome="/view/manutencao/manutencao_tratamento.xhtml" />
+								<p:menuitem value="Vacina"
+									outcome="/view/manutencao/manutencao_vacina.xhtml" />
+							</p:submenu>
+						</p:submenu>
+						<ui:remove>
+							<p:submenu label="Manejos">
+								<p:menuitem value="Novo pedido" />
+								<p:menuitem value="Pesquisa" />
+							</p:submenu>
+						</ui:remove>
+						<ui:remove>
+							<p:submenu label="Movimentações">
+								<p:menuitem value="Novo pedido" />
+								<p:menuitem value="Pesquisa" />
+							</p:submenu>
+						</ui:remove>
+						<ui:remove>
+							<p:submenu label="Relatórios">
+								<p:menuitem value="Novo pedido" />
+								<p:menuitem value="Pesquisa" />
+							</p:submenu>
+						</ui:remove>
+						<p:menuitem value="Sair" action="#{autenticacaoBean.logout}" />
+					</p:menubar>
+				</h:form>
+			</div>
+
+		</p:layoutUnit>
+
+		<p:layoutUnit position="south" size="35" resizable="true"
+			closable="true" collapsible="true">
+			<center>
+				<h:outputText value="Desenvolvido por: APSS - Adilson Paraguai" />
+			</center>
+		</p:layoutUnit>
+
+
+
+		<p:layoutUnit position="center">
+			<ui:insert name="corpo" />
+		</p:layoutUnit>
+
+	</p:layout>
+	
+	<script>
+			function configurarMoeda() {
+				$(".moeda").maskMoney({ decimal: ",", thousands: ".", allowZero: true });
+			}
+			
+			$(document).ready(function() {
+				configurarMoeda();
+			});
+		</script>
+
+</h:body>
+</html>

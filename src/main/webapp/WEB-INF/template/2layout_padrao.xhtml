@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title><ui:insert name="titulo">SGG</ui:insert></title>
+	<h:outputStylesheet library="css" name="sistema.css" />
+	<h:outputStylesheet library="primefaces" name="grid/grid.css" />
+	<h:outputScript target="body" library="js" name="locale.js" />
+	<h:outputScript target="body" library="js" name="closeDialog.js" />
+</h:head>
+
+<h:body>
+
+	<p:ajaxStatus styleClass="ajax-status">
+		<f:facet name="start">
+			<h:graphicImage library="images" name="loading.gif" />
+		</f:facet>
+		<f:facet name="complete">
+			<h:outputText value="" />
+		</f:facet>
+	</p:ajaxStatus>
+
+	<h:form>
+		<p:growl autoUpdate="true" />
+	</h:form>
+
+	<p:layout fullPage="true">
+
+		<!-- topo -->
+		<p:layoutUnit position="north" size="100" header="p" styleClass="fundo-titulo fundo-menu"
+			resizable="false" closable="false" collapsible="false">
+
+			<div id="logo">
+				<a href="/FazendaWeb/home.xhtml"> <p:graphicImage
+						library="images" name="fazendawebicon.png" style="height:75px;" />
+				</a>
+			</div>
+			<div id="nomeSystem">
+				<span style="font-size: 25px">Sistema Gestão de Gado</span> <br />
+				<span style="font-size: 12px; font-family: verdana;">Versão:
+					0.01.10</span>
+			</div>
+			<span
+				style="float: right; height: 30px; line-height: 30px; margin-right: 200px; color: white; font-size: 15px">
+				Olá Usuário! #{autenticacaoBean.usuarioLogado.nome} </span>
+
+		</p:layoutUnit>
+
+		<p:layoutUnit position="south" size="100" header="Bottom"
+			resizable="true" closable="true" collapsible="true">
+			<h:outputText value="South unit content." />
+		</p:layoutUnit>
+
+		<p:layoutUnit position="west" size="200" header="Left"
+			resizable="true" closable="true" collapsible="true">
+			<h:outputText value="West unit content." />
+		</p:layoutUnit>
+
+		<p:layoutUnit position="east" size="200" header="Right"
+			resizable="true" closable="true" collapsible="true" effect="drop">
+			<h:outputText value="Right unit content." />
+		</p:layoutUnit>
+
+		<p:layoutUnit position="center">
+        //page code
+    </p:layoutUnit>
+	</p:layout>
+
+	<ui:remove>
+		<header>
+
+		<div id="logo">
+			<a href="/FazendaWeb/home.xhtml"> <p:graphicImage
+					library="images" name="fazendawebicon.png" style="height:75px;" />
+			</a>
+		</div>
+		<div id="nomeSystem">
+			<span style="font-size: 25px">Sistema Gestão de Gado</span> <br /> <span
+				style="font-size: 12px; font-family: verdana;">Versão:
+				0.01.10</span>
+		</div>
+		<span
+			style="float: right; height: 30px; line-height: 30px; margin-right: 200px; color: white; font-size: 15px">
+			Olá Usuário! #{autenticacaoBean.usuarioLogado.nome} </span>
+
+
+		<div style="float: left; margin-left: 95px; margin-top: 43px;">
+
+			<h:form style="display: inline-block">
+				<p:menubar styleClass="menu-sistema">
+					<p:submenu label="Cadastros">
+						<p:submenu label="Colaboradores">
+							<p:menuitem value="Clientes"
+								outcome="/view/cadastros/cliente/cliente.xhtml" />
+							<p:menuitem value="Fornecedores"
+								outcome="/view/cadastros/fornecedor/fornecedor.xhtml" />
+							<p:menuitem value="Profissionais"
+								outcome="/view/cadastros/profissional/profissional.xhtml" />
+							<p:menuitem value="Funcionários"
+								outcome="/view/cadastros/funcionario/funcionario.xhtml" />
+							<p:menuitem value="Empresa"
+								outcome="/view/cadastros/empresa/empresa.xhtml" />
+						</p:submenu>
+						<p:submenu label="Animais">
+							<p:menuitem value="Animal" outcome="/view/cadastros/animal.xhtml" />
+							<p:menuitem value="Raça" outcome="/view/cadastros/raca.xhtml" />
+							<p:menuitem value="Espécie"
+								outcome="/view/cadastros/especie.xhtml" />
+							<p:menuitem value="Pelagem"
+								outcome="/view/cadastros/pelagem.xhtml" />
+							<p:menuitem value="Origem" outcome="/view/cadastros/origem.xhtml" />
+							<p:menuitem value="Categoria"
+								outcome="/view/cadastros/categoria.xhtml" />
+							<p:menuitem value="Causa da Morte"
+								outcome="/view/cadastros/causa_morte.xhtml" />
+							<p:menuitem value="Condição Corporal"
+								outcome="/view/cadastros/condicao_corporal.xhtml" />
+							<p:menuitem value="Motivo da Venda"
+								outcome="/view/cadastros/motivo_venda.xhtml" />
+						</p:submenu>
+						<p:submenu label="Produtos">
+							<p:menuitem value="Produtos"
+								outcome="/view/cadastros/produto/produto.xhtml" />
+							<p:menuitem value="Grupo de Produtos"
+								outcome="/view/cadastros/grupo_produto.xhtml" />
+							<p:menuitem value="Unidade de Media"
+								outcome="/view/cadastros/unidade_medida.xhtml" />
+						</p:submenu>
+						<p:submenu label="Outros">
+							<p:menuitem value="Usuários"
+								outcome="/view/usuario/pesquisa_usuario.xhtml" />
+							<p:menuitem value="Grupo de Usuários"
+								outcome="/view/cadastros/grupo_usuario.xhtml" />
+							<p:menuitem value="Plano de Conta"
+								outcome="/view/cadastros/plano_conta.xhtml" />
+							<p:menuitem value="Cadastros Basicos"
+								outcome="/view/cadastros/basico/outros.xhtml" />
+						</p:submenu>
+					</p:submenu>
+					<p:submenu label="Manutenção">
+						<p:submenu label="Animais">
+							<ui:remove>
+								<p:menuitem value="Compra/Venda"
+									outcome="/view/cadastros/animal.xhtml" />
+								<p:menuitem value="Raça" outcome="/view/cadastros/raca.xhtml" />
+								<p:menuitem value="Pessagem Corporal"
+									outcome="/view/cadastros/especie.xhtml" />
+								<p:menuitem value="Animal no Pasto"
+									outcome="/view/cadastros/pelagem.xhtml" />
+							</ui:remove>
+							<p:menuitem value="Cobertura"
+								outcome="/view/manutecao/manutecao_cobertura3.xhtml" />
+							<p:menuitem value="Parto"
+								outcome="/view/manutecao/manutencao_parto.xhtml" />
+							<p:menuitem value="Secagem"
+								outcome="/view/manutecao/manutecao_secagem.xhtml" />
+							<p:menuitem value="Vacina"
+								outcome="/view/cadastros/condicao_corporal.xhtml" />
+							<p:menuitem value="Exame"
+								outcome="/view/cadastros/motivo_venda.xhtml" />
+							<p:menuitem value="Tratamento"
+								outcome="/view/cadastros/motivo_venda.xhtml" />
+						</p:submenu>
+					</p:submenu>
+					<ui:remove>
+						<p:submenu label="Manejos">
+							<p:menuitem value="Novo pedido" />
+							<p:menuitem value="Pesquisa" />
+						</p:submenu>
+					</ui:remove>
+					<ui:remove>
+						<p:submenu label="Movimentações">
+							<p:menuitem value="Novo pedido" />
+							<p:menuitem value="Pesquisa" />
+						</p:submenu>
+					</ui:remove>
+					<ui:remove>
+						<p:submenu label="Relatórios">
+							<p:menuitem value="Novo pedido" />
+							<p:menuitem value="Pesquisa" />
+						</p:submenu>
+					</ui:remove>
+					<p:menuitem value="Sair" action="#{autenticacaoBean.logout}" />
+				</p:menubar>
+			</h:form>
+
+		</div>
+
+		<div style="clear: both"></div>
+
+		</header>
+
+
+		<div id="conteudo">
+			<ui:insert name="corpo" />
+		</div>
+
+		<p:separator style="margin-top: 20px" />
+
+		<footer> Sistema desenvolvido por XXXX - <a
+			href="http://bit.ly/Y8saFl" target="_blank">www.google.com</a> </footer>
+
+
+	</ui:remove>
+
+</h:body>
+
+</html>

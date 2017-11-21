@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Profissional</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{profissionalBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Profissionais</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{profissionalBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{profissionalBean.editar}"
+						disabled="#{profissionalBean.profissionalSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{profissionalBean.editar}"
+						disabled="#{profissionalBean.profissionalSelecionado == null}">
+					</p:commandButton>
+					<ui:remove>
+						<p:separator />
+						<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+							style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+					</ui:remove>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-profissional"
+				value="#{profissionalBean.profissionals}" var="profissional"
+				style="margin-top: 5px" emptyMessage="Nenhuma registro encontrada."
+				rows="10" paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{profissionalBean.profissionalSelecionado}"
+				rowKey="#{profissional.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{profissional.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{profissional.id}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="width: 400px"
+					sortBy="#{profissional.nome}">
+					<h:outputText value="#{profissional.nome}" />
+				</p:column>
+
+				<p:column headerText="Tipo" style="width: 50px; text-align: center;"
+					sortBy="#{profissional.tipoPessoa}">
+					<h:outputText value="#{profissional.tipoPessoa}" />
+				</p:column>
+
+				<p:column headerText="Cpf ou Cnpj" style="width: 140px"
+					sortBy="#{profissional.cpfCnpj}">
+					<h:outputText value="#{profissional.cpfCnpj}" />
+				</p:column>
+
+				<p:column headerText="Telefone" style="width: 100px"
+					sortBy="#{profissional.telefone}">
+					<h:outputText value="#{profissional.telefone}" />
+				</p:column>
+
+				<p:column headerText="Celular" style="width: 100px"
+					sortBy="#{profissional.celular}">
+					<h:outputText value="#{profissional.celular}" />
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{profissional.status}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{profissional.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Profissional" widgetVar="dialogCadastro"
+			modal="true" resizable="false" draggable="true" id="dgCadastro"
+			closeOnEscape="true" width="743" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+				<p:panelGrid id="panel" styleClass="semBorda" style="padding: 0px;">
+					<!-- 1ª LINHA -->
+					<p:focus context="panel" />
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtNome" value="Nome completo" />
+						</p:column>
+						<p:column colspan="2">
+							<p:outputLabel for="txtSexo" value="Gênero" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtNasc" value="Data de Nascimento" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtNome"
+								value="#{profissionalBean.profissional.nome}" required="true"
+								requiredMessage="Informe o Nome / Razação Social"
+								style="width: 97%;" />
+						</p:column>
+						<p:column colspan="2">
+							<p:selectOneMenu id="txtSexo"
+								value="#{profissionalBean.profissional.sexo}"
+								style="width: 140px;" required="true"
+								requiredMessage="Informe o gênero">
+								<f:selectItem itemLabel="Selecione..." value="#{null}" />
+								<f:selectItems value="#{profissionalBean.sexos}" var="obj"
+									itemLabel="#{obj.descricao}" itemValue="#{obj}" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column colspan="3">
+							<h:panelGroup>
+								<p:calendar id="txtNasc" pattern="dd/MM/yyyy" locale="pt_BR"
+									value="#{profissionalBean.profissional.nascimento}" size="16" />
+								<p:selectBooleanCheckbox itemLabel="Ativo"
+									style="margin-left: 15px;"
+									value="#{profissionalBean.profissional.status}" />
+							</h:panelGroup>
+						</p:column>
+					</p:row>
+
+					<!-- 2ª LINHA -->
+					<p:row>
+						<p:column colspan="1">
+							<p:selectOneRadio id="txtTipoPessoa" required="true"
+								value="#{profissionalBean.profissional.tipoPessoa}"
+								requiredMessage="Selecione um do CNPJ / CPF">
+								<f:selectItem itemLabel="CNPJ" itemValue="J" />
+								<f:selectItem itemLabel="CPF" itemValue="F" />
+								<p:ajax event="change" process="@this" update="textTipo" />
+							</p:selectOneRadio>
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtRG" value="Inscr.Estadual / RG" />
+						</p:column>
+						<p:column colspan="2">
+							<p:outputLabel for="txtCmv" value="CMV" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtTipoProf" value="Tipo de Profissional" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="1">
+							<h:panelGroup id="textTipo">
+								<!-- <p:focus context="textTipo" /> -->
+								<p:inputMask id="txtCpf"
+									rendered='#{profissionalBean.profissional.tipoPessoa=="F"}'
+									mask="999.999.999-99"
+									value="#{profissionalBean.profissional.cpfCnpj}"
+									required="true" requiredMessage="Informe o CNPJ / CPF:"
+									style="width: 140px;" />
+								<p:inputMask id="txtCpf2"
+									rendered='#{profissionalBean.profissional.tipoPessoa=="J"}'
+									mask="99.999.999/9999-99"
+									value="#{profissionalBean.profissional.cpfCnpj}"
+									required="true" requiredMessage="Informe o CNPJ / CPF:"
+									style="width: 140px;" />
+							</h:panelGroup>
+						</p:column>
+						<p:column colspan="1">
+							<p:inputText id="txtRG"
+								value="#{profissionalBean.profissional.numDoc}"
+								style="width: 145px;" />
+						</p:column>
+						<p:column colspan="2">
+							<p:inputText id="txtCmv"
+								value="#{profissionalBean.profissional.cmv}"
+								style="width: 160px;" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtTipoProf"
+								value="#{profissionalBean.profissional.tipoProfissional}"
+								style="width: 95%;" />
+						</p:column>
+					</p:row>
+
+					<!-- 3ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtEndereco" value="Endereço" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtNum" value="Num" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel value="Complemento" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtEndereco" style="width: 97%;" required="true"
+								requiredMessage="Informe o Endereço"
+								value="#{profissionalBean.profissional.endereco}" />
+						</p:column>
+						<p:column colspan="1">
+							<p:inputText id="txtNum" style="width: 75px;" required="true"
+								requiredMessage="Informe o Número"
+								value="#{profissionalBean.profissional.numero}" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtComplemento" style="width: 97%"
+								value="#{profissionalBean.profissional.complemento}" />
+						</p:column>
+					</p:row>
+
+
+					<!-- 4ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtBairro" value="Bairro" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtCep" value="Cep" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtUF" value="UF" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtCidade" value="Cidade" />
+						</p:column>
+
+
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtBairro"
+								value="#{profissionalBean.profissional.bairro}" required="true"
+								requiredMessage="Informe o Bairro" style="width: 97%" />
+						</p:column>
+						<p:column colspan="1">
+							<p:inputMask mask="99999-999" id="txtCep" required="true"
+								requiredMessage="Informe o Cep"
+								value="#{profissionalBean.profissional.cep}"
+								style="width: 75px;" />
+						</p:column>
+						<p:column>
+							<p:selectOneMenu id="txtUF" required="true"
+								requiredMessage="Informe o Estado"
+								value="#{profissionalBean.profissional.uf}"
+								style="width: 30px; min-width: 30px; ">
+								<f:selectItem itemLabel="Sel.." value="#{null}" />
+								<f:selectItems value="#{profissionalBean.estados}" var="obj"
+									itemLabel="#{obj.sigla}" itemValue="#{obj.sigla}" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column colspan="1">
+							<p:inputText id="txtCidade" required="true"
+								requiredMessage="Informe a Cidade"
+								value="#{profissionalBean.profissional.cidade}"
+								style="width: 210px;" />
+						</p:column>
+					</p:row>
+
+					<!-- 5ª LINHA -->
+					<p:row>
+						<p:column colspan="1">
+							<p:outputLabel for="txtCelular" value="Celular" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtFone" value="Fone1" />
+						</p:column>
+						<p:column colspan="2">
+							<p:outputLabel for="txtFone2" value="Fone2" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtContato" value="Contato" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="1">
+							<p:inputMask id="txtCelular" mask="(99)?99999-9999"
+								value="#{profissionalBean.profissional.celular}"
+								style="width: 140px;" />
+						</p:column>
+						<p:column colspan="1">
+							<p:inputMask id="txtFone" mask="(99)?99999-9999"
+								value="#{profissionalBean.profissional.telefone}"
+								style="width: 140px;" />
+						</p:column>
+						<p:column colspan="2">
+							<p:inputMask id="txtFone2" mask="(99)?99999-9999"
+								value="#{profissionalBean.profissional.telefone2}"
+								style="width: 160px;" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtContato"
+								value="#{profissionalBean.profissional.contato}"
+								style="width: 95%;" />
+						</p:column>
+					</p:row>
+					<!-- 6ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtEmail" value="E-mail" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtSite" value="Site" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtEmail"
+								value="#{profissionalBean.profissional.email}"
+								style="width: 97%" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtSite"
+								value="#{profissionalBean.profissional.site}"
+								style="width: 97%;" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 0px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-left:0px;" oncomplete="PF('dialogCadastro').hide()"
+							immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							id="salvarCommandButton"
+							update="form-cadastro, form-table, form-menu"
+							action="#{profissionalBean.salvar}"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+					<p:toolbarGroup>
+						<p:selectBooleanCheckbox itemLabel="Cliente"
+							style="margin-left:5px;"
+							value="#{profissionalBean.profissional.cliente}" />
+						<p:selectBooleanCheckbox itemLabel="Fornecedor"
+							value="#{profissionalBean.profissional.fornecedor}"
+							style="margin-left:5px;" />
+						<p:selectBooleanCheckbox itemLabel="Funcionário"
+							value="#{profissionalBean.profissional.funcionario}"
+							style="margin-left:5px;" />
+
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Exclusão Profissional"
+			widgetVar="confirmacaoExclusao" modal="true" resizable="false"
+			draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Profissional:" />
+					<p:outputLabel
+						value="#{profissionalBean.profissional.id} - #{profissionalBean.profissional.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{profissionalBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,260 @@
+@charset "utf-8";
+
+.salvar-icon {
+	background-image: url(../resources/images/save.png) !important;
+}
+
+.novo-icon {
+	background-image: url(../resources/images/new.png) !important;
+}
+
+.voltar-icon {
+	background-image: url(../resources/images/voltar.png) !important;
+}
+
+.adicionar-icon {
+	background-image: url(../resources/images/adicionar.png) !important;
+}
+
+.editar-icon {
+	background-image: url(../resources/images/editar.png) !important;
+}
+
+.excluir-icon {
+	background-image: url(../resources/images/del.png) !important;
+}
+
+.cancelar-icon {
+	background-image: url(../resources/images/cancelar.png) !important;
+}
+
+.pesquisa-icon {
+	background-image: url(../resources/images/pesquisa.png) !important;
+}
+
+.fundo-titulo>.ui-widget-header {
+	border: none;
+	padding: 0px;
+	background: #a38e17;
+}
+
+/* cor de fundo do menu */
+.fundo-menu>.ui-widget-content {
+	border: none !important;
+	padding: 0px !important;
+	background: #004869;
+	background: -moz-linear-gradient(#0095da, #004869);
+	background: -webkit-linear-gradient(#0095da, #004869);
+	-ms-filter:
+		"progid:DXImageTransform.Microsoft.gradient(startColorstr='#0095da', endColorstr='#004869')";
+	border-bottom: 1px solid #CACACA;
+	box-shadow: 0 0 7px #888;
+}
+
+#distanciaLabel {
+	padding-top: 1px !important e;
+	padding-bottom: 1px !important e;
+}
+
+.ui-panelgrid td {
+	padding: 2px !important;
+}
+
+#logo {
+	position: fixed;
+	left: 10px;
+	top: 5px;
+	width: 110px;
+	height: 90px;
+
+	/* border: 1px solid #000000; */
+}
+
+#nomeSystem {
+	position: fixed;
+	top: 3px;
+	left: 90px;
+	width: 800px;
+	height: 45px;
+	color: white;
+	font-variant: small-caps;
+
+	/* border: 1px solid #000000; */
+}
+
+.semPreenchimento {
+	background: none !important;
+	border: none !important;
+}
+
+.semBorda tr, .semBorda td {
+	border: none !important;
+	background: none !important;
+	padding-bottom: 0.2em !important;
+	padding-top: 0.2em !important;
+}
+
+/* .ui-dialog.ui-widget-content.espacamentos-dialog .ui-dialog-content {
+	padding-top: 1px;
+	padding-bottom: 0px;
+	font-size: 14px;
+} */
+/* espacamento dentro do dialog */
+.espacamento_dialog>.ui-dialog-content {
+	padding-top: 1px !important;
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+}
+
+/* espacamento do titulo das abas tabview */
+.ui-tabs .ui-tabs-nav.ui-widget-header li a {
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.ui-fieldset, .ui-fieldset .ui-fieldset-legend {
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
+	padding-left: 12px !important;
+	font-weight: bold;
+}
+
+.table-tela-animal .ui-datatable-tablewrapper {
+	height: 280px;
+}
+
+.ui-widget-content.border-panel {
+	border: none !important;
+}
+
+/*tamanho do scrob*/
+.table-tela-manutecao .ui-datatable-tablewrapper {
+	height: 100%;
+}
+
+/* espacamento dentro das aba */
+.ui-tabs.espacamento-tabview .ui-tabs-panel {
+	padding-top: 4px;
+	padding-left: 10px;
+	padding-right: 7px;
+	padding-bottom: 4px;
+}
+
+.ui-dialog.ui-widget-content .ui-dialog-titlebar {
+	padding: 3px 15px;
+	border: none !important;
+	background-color: #ffffff;
+}
+
+.ui-inputtext {
+	text-transform: uppercase;
+}
+
+#txtEmail {
+	text-transform: lowercase;
+}
+
+.ajax-status {
+	position: fixed;
+	top: 75px;
+	right: 15px;
+	width: 35px;
+	height: 35px
+}
+
+.ui-growl {
+	position: fixed;
+	top: 13% !important;
+	right: 10% !important;
+	width: 301px !important;
+}
+
+body {
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0px;
+	font-weight: normal;
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled,
+	.ui-widget-header .ui-state-disabled {
+	opacity: 1;
+	filter: Alpha(Opacity = 35);
+	background-image: none;
+}
+
+header {
+	padding: 5px 0px;
+	margin-bottom: 30px;
+	height: 65px;
+	box-shadow: 0px 2px 2px #ccc;
+	background: #004869;
+	background: -moz-linear-gradient(#0095da, #004869);
+	background: -webkit-linear-gradient(#0095da, #004869);
+	-ms-filter:
+		"progid:DXImageTransform.Microsoft.gradient(startColorstr='#0095da', endColorstr='#004869')";
+	border-bottom: 1px solid #CACACA;
+	box-shadow: 0 0 7px #888;
+	/* background-image: url(../resources/images/textura6.jpg) !important; */
+}
+
+header>div {
+	margin-left: 8px
+}
+
+h1 {
+	margin-left: 20px;
+}
+
+h2 {
+	color: #0088CC;
+	font-variant: small-caps;
+}
+
+#conteudo {
+	padding: 0px 8px;
+	min-height: 450px;
+}
+
+footer {
+	padding: 0px 8px;
+	margin-bottom: 10px
+}
+
+.rotulo {
+	width: 120px;
+}
+
+/* Menu sistema inicio */
+.menu-sistema {
+	border: 0px !important;
+	padding: 0px !important;
+	background: none !important;
+}
+
+.menu-sistema>.ui-menu-list>.ui-menuitem>a>.ui-menuitem-text {
+	color: #ffffff !important;
+}
+
+.menu-sistema .ui-icon-triangle-1-s {
+	background: url(#{ resource [ 'images:seta-para-baixo.png' ]
+}
+)
+no-repeat
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;
+}
+/* Menu sistema fim */

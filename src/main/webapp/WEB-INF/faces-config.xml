@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
+	version="2.2">
+	<validator>
+		<validator-id>dataDiagnosticoValidation</validator-id>
+		<validator-class>br.com.apss.fazendaweb.validadors.DataDiagnosticoValidation</validator-class>
+	</validator>
+	<validator>
+		<validator-id>resultadoDiagnosticoValidation</validator-id>
+		<validator-class>br.com.apss.fazendaweb.validadors.ResultadoDiagnosticoValidation</validator-class>
+	</validator>
+	<validator>
+		<validator-id>dtPartoValidation</validator-id>
+		<validator-class>br.com.apss.fazendaweb.validadors.DtPartoValidation</validator-class>
+	</validator>
+	<factory>
+		<exception-handler-factory>br.com.apss.fazendaweb.util.JsfExceptionHandlerFactory</exception-handler-factory>
+	</factory>
+	<lifecycle>
+		<phase-listener>br.com.apss.fazendaweb.util.AutenticacaoListener</phase-listener>
+	</lifecycle>
+</faces-config>

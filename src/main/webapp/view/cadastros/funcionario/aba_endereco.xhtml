@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<p:panelGrid styleClass="semBorda" style="padding: 0px;">
+		<p:row>
+			<p:column colspan="2">
+				<p:outputLabel for="txtEndCep" value="Cep" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column colspan="2">
+				<p:inputMask id="txtEndCep" value="#{funcionarioBean.funcionario.cep}"
+					mask="99999-999" size="10" required="true"
+					requiredMessage="Informe o cep" />
+			</p:column>
+		</p:row>
+
+		<p:row>
+			<p:column colspan="2">
+				<p:outputLabel for="txtEndEndereco" value="Endereço" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtEndNum" value="Número" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtEndComplemento" value="Complemento" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column colspan="2">
+				<p:inputText id="txtEndEndereco"
+					value="#{funcionarioBean.funcionario.endereco}" style="width:97%;"
+					required="true" requiredMessage="Informe o endereço" />
+			</p:column>
+			<p:column>
+				<p:inputText id="txtEndNum" value="#{funcionarioBean.funcionario.numero}"
+					size="4" required="true" requiredMessage="Informe o número" />
+			</p:column>
+			<p:column>
+				<p:inputText id="txtEndComplemento"
+					value="#{funcionarioBean.funcionario.complemento}" />
+			</p:column>
+		</p:row>
+
+
+		<p:row>
+			<p:column colspan="1">
+				<p:outputLabel for="txtEndBairro" value="Bairro" />
+			</p:column>
+			<p:column>
+				<p:outputLabel for="txtEndEstado" value="Estado" />
+			</p:column>
+			<p:column colspan="2">
+				<p:outputLabel for="txtEndCidade" value="Cidade" />
+			</p:column>
+		</p:row>
+		<p:row>
+			<p:column colspan="1">
+				<p:inputText id="txtEndBairro" value="#{funcionarioBean.funcionario.bairro}"
+					size="25" required="true" requiredMessage="Informe o bairro" />
+			</p:column>
+			<p:column>
+				<p:selectOneMenu id="txtEndEstado" value="#{funcionarioBean.funcionario.uf}"
+					required="true" requiredMessage="Informe o estado">
+					<f:selectItem itemLabel="Selecione..." value="#{null}" />
+					<f:selectItems value="#{funcionarioBean.estados}" var="obj"
+						itemLabel="#{obj.sigla}" itemValue="#{obj.sigla}" />
+				</p:selectOneMenu>
+			</p:column>
+			<p:column colspan="2">
+				<p:inputText id="txtEndCidade" value="#{funcionarioBean.funcionario.cidade}"
+					style="width:97%;" required="true"
+					requiredMessage="Informe o cidade" />
+			</p:column>
+		</p:row>
+
+	</p:panelGrid>
+
+</ui:composition>

@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Motivo da Venda</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{motivoVendaBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Motivo da Venda</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{motivoVendaBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						style="margin-left:3px; margin-right: 3px;"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{motivoVendaBean.editar}"
+						disabled="#{motivoVendaBean.motivoVendaSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{motivoVendaBean.editar}"
+						disabled="#{motivoVendaBean.motivoVendaSelecionado == null}">
+					</p:commandButton>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-motivoVenda"
+				value="#{motivoVendaBean.motivoVendas}" var="motivoVenda"
+				style="margin-top: 5px" emptyMessage="Nenhuma registro encontrada."
+				rows="10" paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{motivoVendaBean.motivoVendaSelecionado}"
+				rowKey="#{motivoVenda.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{motivoVenda.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{motivoVenda.id}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="width: 400px"
+					sortBy="#{motivoVenda.nome}">
+					<h:outputText value="#{motivoVenda.nome}" />
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{motivoVenda.status}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{motivoVenda.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Motivo da Venda" widgetVar="dialogCadastro"
+			modal="true" resizable="false" draggable="true" id="dgCadastro"
+			closeOnEscape="true" width="400" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:panelGrid columns="2" styleClass="semBorda">
+
+					<p:outputLabel for="txtId" value="ID:" />
+					<p:inputText id="txtId" size="5" style="text-align:center;"
+						disabled="true" value="#{motivoVendaBean.motivoVenda.id}" />
+
+					<p:outputLabel for="txtNome" value="Motivo da Venda:" />
+					<p:inputText id="txtNome" size="35" maxlength="35" required="true"
+						requiredMessage="Informe a motivo da venda"
+						value="#{motivoVendaBean.motivoVenda.nome}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox
+						value="#{motivoVendaBean.motivoVenda.status}" />
+
+				</p:panelGrid>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 0px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-right:3px;"
+							oncomplete="PF('dialogCadastro').hide()" immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							id="salvarCommandButton"
+							update="form-cadastro, form-table, form-menu"
+							action="#{motivoVendaBean.salvar}"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Exclusão Motivo da Venda"
+			widgetVar="confirmacaoExclusao" modal="true" resizable="false"
+			draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Motivo da Venda:" />
+					<p:outputLabel
+						value="#{motivoVendaBean.motivoVenda.id} - #{motivoVendaBean.motivoVenda.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{motivoVendaBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

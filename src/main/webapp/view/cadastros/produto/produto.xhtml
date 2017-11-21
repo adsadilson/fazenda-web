@@ -1,0 +1,678 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Produto</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{produtoBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Produtos</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{produtoBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						style="margin-left: 5px; margin-right: 5px;"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{produtoBean.editar}"
+						disabled="#{produtoBean.produtoSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{produtoBean.editar}"
+						disabled="#{produtoBean.produtoSelecionado == null}">
+					</p:commandButton>
+					<ui:remove>
+						<p:separator />
+						<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+							style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+					</ui:remove>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-produto" value="#{produtoBean.produtos}"
+				var="produto" style="margin-top: 5px"
+				emptyMessage="Nenhuma registro encontrada." rows="10"
+				paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{produtoBean.produtoSelecionado}" rowKey="#{produto.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código de Barra"
+					sortBy="#{produto.codigoBarra}"
+					style="text-align: center; width: 130px">
+					<h:outputText value="#{produto.codigoBarra}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="width: 270px"
+					sortBy="#{produto.nome}">
+					<h:outputText value="#{produto.nome}" />
+				</p:column>
+
+				<p:column headerText="Tipo" style="width: 85px; text-align: center;"
+					sortBy="#{produto.tipoProduto}">
+					<h:outputText value="#{produto.tipoProduto}" />
+				</p:column>
+
+				<p:column headerText="Categoria"
+					style="text-align: center; width: 170px"
+					sortBy="#{produto.grupoProduto.nome}">
+					<h:outputText value="#{produto.grupoProduto.nome}">
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Und." style="text-align: center; width: 70px"
+					sortBy="#{produto.unidadeMedia.nome}">
+					<h:outputText value="#{produto.unidadeMedia.nome}">
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Quantidade"
+					style="text-align: center; width: 100px"
+					sortBy="#{produto.quantidade}">
+					<h:outputText value="#{produto.quantidade}">
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Preço Venda"
+					style="text-align: right; width: 100px"
+					sortBy="#{produto.vlrVenda}">
+					<h:outputText value="#{produto.vlrVenda}">
+						<f:convertNumber type="currency" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Preço Custo"
+					style="text-align: right; width: 100px"
+					sortBy="#{produto.vlrCusto}">
+					<h:outputText value="#{produto.vlrCusto}">
+						<f:convertNumber type="currency" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{produto.status}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{produto.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Produto" widgetVar="dialogCadastro"
+			modal="true" resizable="false" draggable="true" id="dgCadastro"
+			closeOnEscape="true" width="525" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+				<p:panelGrid id="panel" styleClass="semBorda" style="padding: 0px;">
+					<!-- 1ª LINHA -->
+					<p:row>
+						<p:column colspan="1">
+							<p:outputLabel value="Código Barra" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtDescricao" value="Descriçao" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="1">
+							<p:inputText id="txtCodigoBarra" size="13"
+								value="#{produtoBean.produto.codigoBarra}" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtDescricao" style="width: 97%;"
+								value="#{produtoBean.produto.nome}" required="true"
+								requiredMessage="Informe a descrição" />
+						</p:column>
+					</p:row>
+					<!-- 2ª LINHA -->
+					<p:row>
+						<p:column colspan="5">
+							<p:commandLink value="Fornecedor"
+								onclick="PF('dialogCadastroForn').show()" process="@this"
+								update="form-cadastro-forn"
+								action="#{fornecedorBean.novoCadastro}">
+								<p:resetInput target="form-cadastro-forn" />
+							</p:commandLink>
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="5">
+							<p:selectOneMenu id="comboFornecedor" style="width:94%;"
+								required="true" requiredMessage="Selecione um fornecedor"
+								filter="true" converter="omnifaces.SelectItemsConverter"
+								value="#{produtoBean.produto.fornecedor}">
+								<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+								<f:selectItems value="#{produtoBean.fornecedores}" var="f"
+									itemLabel="#{f.nome}" itemValue="#{f}" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<!-- 3ª LINHA -->
+					<p:row>
+						<p:column colspan="1">
+							<p:commandLink value="Unidade"
+								onclick="PF('dialogCadastroUn').show()" process="@this"
+								update="form-cadastro-un"
+								action="#{unidadeMedidaBean.novoCadastro}">
+								<p:resetInput target="form-cadastro-un" />
+							</p:commandLink>
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtTipo" value="Tipo" />
+						</p:column>
+						<p:column colspan="2">
+							<p:commandLink value="Grupo de Produto"
+								onclick="PF('dialogCadastroCat').show()" process="@this"
+								update="form-cadastro-cat"
+								action="#{grupoProdutoBean.novoCadastro}">
+								<p:resetInput target="form-cadastro-cat" />
+							</p:commandLink>
+						</p:column>
+
+					</p:row>
+					<p:row>
+						<p:column colspan="1">
+							<p:selectOneMenu id="comboUnidade" style="width:100px;"
+								required="true" requiredMessage="Selecione um unidade"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{produtoBean.produto.unidadeMedia}">
+								<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+								<f:selectItems value="#{produtoBean.unidades}" var="u"
+									itemLabel="#{u.nome}" itemValue="#{u}" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column colspan="1">
+							<p:selectOneMenu id="txtTipo" style="width:93px;" required="true"
+								value="#{produtoBean.produto.tipoProduto}"
+								requiredMessage="Selecione um tipo">
+								<f:selectItem itemLabel="Selecione..." value="#{null}" />
+								<f:selectItems value="#{produtoBean.tipoProdutos}" var="tp"
+									itemLabel="#{tp.descricao}" itemValue="#{tp}" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column colspan="2">
+							<p:selectOneMenu id="comboCategoria" style="width:87%;"
+								required="true" requiredMessage="Selecione um grupo produto"
+								filter="true" converter="omnifaces.SelectItemsConverter"
+								value="#{produtoBean.produto.grupoProduto}">
+								<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+								<f:selectItems value="#{produtoBean.categorias}" var="c"
+									itemLabel="#{c.nome}" itemValue="#{c}" />
+							</p:selectOneMenu>
+						</p:column>
+
+					</p:row>
+
+					<!-- 4ª LINHA -->
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Quantidade" />
+						</p:column>
+						<p:column>
+							<p:outputLabel value="Qtd Minimo" />
+						</p:column>
+						<p:column>
+							<p:outputLabel value="Qtd Máximo" />
+						</p:column>
+						<p:column>
+							<p:outputLabel value="Ultima Compra" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:inputNumber size="13" disabled="true"
+								value="#{produtoBean.produto.quantidade}" decimalSeparator=","
+								thousandSeparator=".">
+							</p:inputNumber>
+						</p:column>
+						<p:column>
+							<p:inputNumber size="12" value="#{produtoBean.produto.qtdMinma}"
+								decimalSeparator="," thousandSeparator=".">
+							</p:inputNumber>
+						</p:column>
+						<p:column>
+							<p:inputNumber size="10" value="#{produtoBean.produto.qtdMaxima}"
+								decimalSeparator="," thousandSeparator=".">
+							</p:inputNumber>
+						</p:column>
+						<p:column>
+							<p:inputText size="10" disabled="true"
+								value="#{produtoBean.produto.dtUltimaCompra}" />
+						</p:column>
+					</p:row>
+
+					<!-- 5ª LINHA -->
+					<p:row>
+						<p:column>
+							<p:outputLabel for="txtCusto" value="Vlr. de Custo" />
+						</p:column>
+						<p:column>
+							<p:outputLabel for="margem" value="Marg. Lucro (%)" />
+						</p:column>
+						<p:column>
+							<p:outputLabel for="txtVenda" value="Vlr. de Venda" />
+						</p:column>
+						<p:column>
+							<p:outputLabel value="Ultima Venda" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:inputText size="13" id="txtCusto" required="true"
+								value="#{produtoBean.produto.vlrCusto}" onfocus="formatoMoeda('txtCusto')">
+								<p:ajax process="form-cadastro:txtVenda, form-cadastro:txtCusto"
+									update="form-cadastro:margem, form-cadastro:txtCusto"
+									listener="#{produtoBean.calcVenda}" />
+							</p:inputText>
+						</p:column>
+						<p:column>
+							<p:inputNumber id="margem" size="12" required="true"
+								emptyValue="empty" value="#{produtoBean.produto.margLucro}"
+								symbol="%" symbolPosition="s">
+								<p:ajax process="form-cadastro:margem, form-cadastro:txtCusto"
+									update="form-cadastro:txtVenda"
+									listener="#{produtoBean.calcMargem}" />
+							</p:inputNumber>
+						</p:column>
+						<p:column>
+							<p:inputNumber size="10" id="txtVenda" required="true"
+								requiredMessage="Informe o valor de venda"
+								value="#{produtoBean.produto.vlrVenda}" symbol="R$ "
+								decimalSeparator="," thousandSeparator=".">
+								<p:ajax process="form-cadastro:txtVenda, form-cadastro:txtCusto"
+									update="form-cadastro:margem"
+									listener="#{produtoBean.calcVenda}" />
+							</p:inputNumber>
+						</p:column>
+						<p:column>
+							<p:inputText size="10" disabled="true"
+								value="#{produtoBean.produto.dtUltimaVenda}" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 0px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-left:0px;" oncomplete="PF('dialogCadastro').hide()"
+							immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							id="salvarCommandButton" style="margin-left:6px;"
+							update="form-cadastro, form-table, form-menu"
+							action="#{produtoBean.salvar}"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Exclusão Produto" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Tem certeza que deseja excluir a Produto:" />
+					<p:outputLabel
+						value="#{produtoBean.produto.id} - #{produtoBean.produto.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{produtoBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Manutenção Fornecedor"
+			widgetVar="dialogCadastroForn" modal="true" resizable="false"
+			draggable="true" id="dgCadastroForn" closeOnEscape="true" width="743"
+			appendTo="@(body)">
+
+			<h:form id="form-cadastro-forn">
+				<p:panelGrid styleClass="semBorda" style="padding: 0px;">
+					<!-- 1ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtNome" value="Nome / Razação Social" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtFantasia" value="Nome Fantasia" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtNome"
+								value="#{fornecedorBean.fornecedor.nome}" required="true"
+								requiredMessage="Informe o Nome / Razação Social"
+								style="width: 97%;" />
+						</p:column>
+						<p:column colspan="3">
+							<h:panelGroup>
+								<p:inputText id="txtFantasia" style="width: 80%;"
+									value="#{fornecedorBean.fornecedor.fantasia}" />
+								<p:selectBooleanCheckbox itemLabel="Ativo"
+									style="margin-left: 15px;"
+									value="#{fornecedorBean.fornecedor.status}" />
+							</h:panelGroup>
+						</p:column>
+					</p:row>
+
+					<!-- 2ª LINHA -->
+					<p:row>
+						<p:column colspan="1">
+							<p:selectOneRadio id="txtTipoPessoa" required="true"
+								value="#{fornecedorBean.fornecedor.tipoPessoa}"
+								requiredMessage="Selecione um do tipo CPF / CNPJ">
+								<f:selectItem itemLabel="CPF" itemValue="F" />
+								<f:selectItem itemLabel="CNPJ" itemValue="J" />
+								<p:ajax event="change" process="@this" update="textTipo" />
+							</p:selectOneRadio>
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtRG" value="Inscr.Estadual / RG" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtResponsavel" value="Responsavel" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="1">
+							<h:panelGroup id="textTipo">
+								<!-- <p:focus context="textTipo" /> -->
+								<p:inputMask id="txtCpf"
+									rendered='#{fornecedorBean.fornecedor.tipoPessoa=="F"}'
+									mask="999.999.999-99"
+									value="#{fornecedorBean.fornecedor.cpfCnpj}" required="true"
+									requiredMessage="Informe o CNPJ / CPF:" style="width: 140px;" />
+								<p:inputMask id="txtCpf2"
+									rendered='#{fornecedorBean.fornecedor.tipoPessoa=="J"}'
+									mask="99.999.999/9999-99"
+									value="#{fornecedorBean.fornecedor.cpfCnpj}" required="true"
+									requiredMessage="Informe o CNPJ / CPF:" style="width: 140px;" />
+							</h:panelGroup>
+						</p:column>
+						<p:column colspan="1">
+							<p:inputText id="txtRG"
+								value="#{fornecedorBean.fornecedor.numDoc}"
+								style="width: 145px;" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtResponsavel" style="width: 97%;"
+								required="true" requiredMessage="Informe o Responsável"
+								value="#{fornecedorBean.fornecedor.responsavel}" />
+						</p:column>
+					</p:row>
+
+					<!-- 3ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtEndereco" value="Endereço" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtNum" value="Num" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel value="Complemento" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtEndereco" style="width: 97%;" required="true"
+								requiredMessage="Informe o Endereço"
+								value="#{fornecedorBean.fornecedor.endereco}" />
+						</p:column>
+						<p:column colspan="1">
+							<p:inputText id="txtNum" style="width: 75px;" required="true"
+								requiredMessage="Informe o Número"
+								value="#{fornecedorBean.fornecedor.numero}" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtComplemento" style="width: 97%"
+								value="#{fornecedorBean.fornecedor.complemento}" />
+						</p:column>
+					</p:row>
+
+
+					<!-- 4ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtBairro" value="Bairro" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtCep" value="Cep" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtUF" value="UF" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtCidade" value="Cidade" />
+						</p:column>
+
+
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtBairro"
+								value="#{fornecedorBean.fornecedor.bairro}" required="true"
+								requiredMessage="Informe o Bairro" style="width: 97%" />
+						</p:column>
+						<p:column colspan="1">
+							<p:inputMask mask="99999-999" id="txtCep" required="true"
+								requiredMessage="Informe o Cep"
+								value="#{fornecedorBean.fornecedor.cep}" style="width: 75px;" />
+						</p:column>
+						<p:column>
+							<p:selectOneMenu id="txtUF" required="true"
+								requiredMessage="Informe o Estado"
+								value="#{fornecedorBean.fornecedor.uf}"
+								style="width: 30px; min-width: 30px; ">
+								<f:selectItem itemLabel="Sel.." value="#{null}" />
+								<f:selectItems value="#{fornecedorBean.estados}" var="obj"
+									itemLabel="#{obj.sigla}" itemValue="#{obj.sigla}" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column colspan="1">
+							<p:inputText id="txtCidade" required="true"
+								requiredMessage="Informe a Cidade"
+								value="#{fornecedorBean.fornecedor.cidade}"
+								style="width: 210px;" />
+						</p:column>
+					</p:row>
+
+					<!-- 5ª LINHA -->
+					<p:row>
+						<p:column colspan="1">
+							<p:outputLabel for="txtCelular" value="Celular" />
+						</p:column>
+						<p:column colspan="1">
+							<p:outputLabel for="txtFone" value="Fone1" />
+						</p:column>
+						<p:column colspan="2">
+							<p:outputLabel for="txtFone2" value="Fone2" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtContato" value="Contato" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="1">
+							<p:inputMask id="txtCelular" mask="(99)?99999-9999"
+								value="#{fornecedorBean.fornecedor.celular}"
+								style="width: 140px;" />
+						</p:column>
+						<p:column colspan="1">
+							<p:inputMask id="txtFone" mask="(99)?99999-9999"
+								value="#{fornecedorBean.fornecedor.telefone}"
+								style="width: 140px;" />
+						</p:column>
+						<p:column colspan="2">
+							<p:inputMask id="txtFone2" mask="(99)?99999-9999"
+								value="#{fornecedorBean.fornecedor.telefone2}"
+								style="width: 160px;" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtContato"
+								value="#{fornecedorBean.fornecedor.contato}" style="width: 95%;" />
+						</p:column>
+					</p:row>
+					<!-- 6ª LINHA -->
+					<p:row>
+						<p:column colspan="2">
+							<p:outputLabel for="txtEmail" value="E-mail" />
+						</p:column>
+						<p:column colspan="3">
+							<p:outputLabel for="txtSite" value="Site" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="2">
+							<p:inputText id="txtEmail"
+								value="#{fornecedorBean.fornecedor.email}" style="width: 97%" />
+						</p:column>
+						<p:column colspan="3">
+							<p:inputText id="txtSite"
+								value="#{fornecedorBean.fornecedor.site}" style="width: 97%;" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+				<p:toolbar style="margin-top: 20px" styleClass="semPreenchimento">
+					<p:toolbarGroup align="right" style="margin-right: 0px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-left:0px;"
+							oncomplete="PF('dialogCadastroForn').hide()" immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							id="salvarCommandButton"
+							update="form-cadastro-forn, :form-cadastro:comboFornecedor"
+							action="#{fornecedorBean.salvar}"
+							oncomplete="if(!args.validationFailed) PF('dialogCadastroForn').hide()" />
+					</p:toolbarGroup>
+					<p:toolbarGroup>
+						<p:selectBooleanCheckbox itemLabel="Cliente"
+							style="margin-left:5px;"
+							value="#{fornecedorBean.fornecedor.cliente}" />
+						<p:selectBooleanCheckbox itemLabel="Profissional"
+							value="#{fornecedorBean.fornecedor.profissional}"
+							style="margin-left:5px;" />
+						<p:selectBooleanCheckbox itemLabel="Funcionário"
+							value="#{fornecedorBean.fornecedor.funcionario}"
+							style="margin-left:5px;" />
+
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Manutenção Unidade de Medida"
+			widgetVar="dialogCadastroUn" modal="true" resizable="false"
+			draggable="true" id="dgCadastroUn" closeOnEscape="true" width="430"
+			appendTo="@(body)">
+
+			<h:form id="form-cadastro-un">
+
+				<p:panelGrid columns="2" styleClass="semBorda">
+
+					<p:outputLabel for="txtId" value="ID:" />
+					<p:inputText id="txtId" size="5" style="text-align:center;"
+						disabled="true" value="#{unidadeMedidaBean.unidadeMedida.id}" />
+
+					<p:outputLabel for="txtNome" value="Sigla:" />
+					<p:inputText id="txtNome" size="10" maxlength="5" required="true"
+						requiredMessage="Informe o nome"
+						value="#{unidadeMedidaBean.unidadeMedida.nome}" />
+
+					<p:outputLabel for="txtDesc" value="Descrição:" />
+					<p:inputText id="txtDesc" size="35" maxlength="35" required="true"
+						requiredMessage="Informe o descrição"
+						value="#{unidadeMedidaBean.unidadeMedida.descricao}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox
+						value="#{unidadeMedidaBean.unidadeMedida.status}" />
+
+				</p:panelGrid>
+
+				<h:panelGrid columns="2" style="margin-top: 20px;">
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						update="form-cadastro-un, :form-cadastro:comboUnidade"
+						action="#{unidadeMedidaBean.salvar}"
+						oncomplete="if(!args.validationFailed) PF('dialogCadastroUn').hide()" />
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-left:0px;"
+						oncomplete="PF('dialogCadastroUn').hide()" immediate="true" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Manutenção Grupo de Produto"
+			widgetVar="dialogCadastroCat" modal="true" resizable="false"
+			draggable="true" id="dgCadastroCat" closeOnEscape="true" width="430"
+			appendTo="@(body)">
+			<h:form id="form-cadastro-cat">
+				<p:panelGrid columns="2" styleClass="semBorda">
+					<p:outputLabel for="txtId" value="ID:" />
+					<p:inputText id="txtId" size="5" style="text-align:center;"
+						disabled="true" value="#{grupoProdutoBean.grupoProduto.id}" />
+
+					<p:outputLabel for="txtNome" value="Nome:" />
+					<p:inputText id="txtNome" size="35" maxlength="35" required="true"
+						requiredMessage="Informe o nome"
+						value="#{grupoProdutoBean.grupoProduto.nome}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox
+						value="#{grupoProdutoBean.grupoProduto.status}" />
+
+				</p:panelGrid>
+
+				<h:panelGrid columns="2" style="margin-top: 20px;">
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						update="form-cadastro-cat, :form-cadastro:comboCategoria"
+						action="#{grupoProdutoBean.salvar}"
+						oncomplete="if(!args.validationFailed) PF('dialogCadastroCat').hide()" />
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-left:0px;"
+						oncomplete="PF('dialogCadastroCat').hide()" immediate="true" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

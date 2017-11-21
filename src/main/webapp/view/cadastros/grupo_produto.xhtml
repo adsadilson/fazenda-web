@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Grupo de Produto</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{grupoProdutoBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Listagem de Grupo de Produto</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{grupoProdutoBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{grupoProdutoBean.editar}"
+						disabled="#{grupoProdutoBean.grupoProdutoSelecionado == null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{grupoProdutoBean.editar}"
+						disabled="#{grupoProdutoBean.grupoProdutoSelecionado == null}">
+					</p:commandButton>
+					<p:separator />
+					<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+						style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-grupoProduto"
+				value="#{grupoProdutoBean.grupoProdutos}" var="grupoProduto"
+				style="margin-top: 5px"
+				emptyMessage="Nenhuma registro encontrada." rows="10"
+				paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{grupoProdutoBean.grupoProdutoSelecionado}"
+				rowKey="#{grupoProduto.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Código" sortBy="#{grupoProduto.id}"
+					style="text-align: center; width: 90px">
+					<h:outputText value="#{grupoProduto.id}" />
+				</p:column>
+
+				<p:column headerText="Descrição" style="width: 400px"
+					sortBy="#{grupoProduto.nome}">
+					<h:outputText value="#{grupoProduto.nome}" />
+				</p:column>
+
+				<p:column headerText="Status" sortBy="#{grupoProduto.status}"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{grupoProduto.status ? 'ATIVO' : 'INATIVO'}" />
+				</p:column>
+				<p:column>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Manutenção Grupo de Produto"
+			widgetVar="dialogCadastro" modal="true" resizable="false"
+			draggable="true" id="dgCadastro" closeOnEscape="true" width="430"
+			appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:panelGrid columns="2" styleClass="semBorda">
+
+					<p:outputLabel for="txtId" value="ID:" />
+					<p:inputText id="txtId" size="5" style="text-align:center;"
+						disabled="true" value="#{grupoProdutoBean.grupoProduto.id}" />
+
+					<p:outputLabel for="txtNome" value="Nome:" />
+					<p:inputText id="txtNome" size="35" maxlength="35" required="true"
+						requiredMessage="Informe o nome"
+						value="#{grupoProdutoBean.grupoProduto.nome}" />
+
+					<p:outputLabel value="Ativo:" />
+					<p:selectBooleanCheckbox
+						value="#{grupoProdutoBean.grupoProduto.status}" />
+
+				</p:panelGrid>
+
+				<h:panelGrid columns="2" style="margin-top: 20px;">
+					<p:commandButton value="Salvar" icon="salvar-icon"
+						update="form-cadastro, form-table, form-menu"
+						action="#{grupoProdutoBean.salvar}"
+						oncomplete="if(!args.validationFailed) PF('dialogCadastro').hide()" />
+					<p:commandButton value="Cancelar" icon="cancelar-icon"
+						style="margin-left:0px;" oncomplete="PF('dialogCadastro').hide()"
+						immediate="true" />
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Exclusão Grupo de Produto"
+			widgetVar="confirmacaoExclusao" modal="true" resizable="false"
+			draggable="true" closeOnEscape="true" width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Grupo Produto:" />
+					<p:outputLabel
+						value="#{grupoProdutoBean.grupoProduto.id} - #{grupoProdutoBean.grupoProduto.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{grupoProdutoBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

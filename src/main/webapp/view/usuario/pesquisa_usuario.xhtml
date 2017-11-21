@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Pesquisa Usuário</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewAction action="#{usuarioBean.inicializarBean}" />
+		</f:metadata>
+
+		<h1>Manutenção de Usuário</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:button value="Novo" icon="novo-icon"
+						outcome="/view/usuario/cadastro_usuario.xhtml" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-usuario" value="#{usuarioBean.usuarios}"
+				var="usuario" style="margin-top: 20px"
+				emptyMessage="Nenhum usuário encontrado." rows="10" paginator="true"
+				paginatorAlwaysVisible="false" paginatorPosition="bottom">
+
+				<p:column headerText="Ações" width="100">
+					<p:commandButton icon="ui-icon-trash" title="Excluir Registro"
+						styleClass="semPreenchimento" id="btn-acao-excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao"
+						action="#{usuarioBean.prepararExclusao(usuario.id)}">
+					</p:commandButton>
+					<p:button icon="ui-icon-pencil" title="Editar Registro"
+						styleClass="semPreenchimento"
+						outcome="/view/usuario/cadastro_usuario.xhtml">
+						<f:param name="codigo" value="#{usuario.id}" />
+					</p:button>
+				</p:column>
+
+				<p:column headerText="Código" width="80" style="text-align: center"
+					sortBy="#{usuario.id}">
+					<h:outputText value="#{usuario.id}" />
+				</p:column>
+
+				<p:column headerText="Login" width="250" style="text-align: left"
+					sortBy="#{usuario.nome}">
+					<h:outputText value="#{usuario.nome}" />
+				</p:column>
+
+				<p:column headerText="E-mail" sortBy="#{usuario.email}"
+					style="text-align: center" width="300">
+					<h:outputText value="#{usuario.email}" />
+				</p:column>
+
+				<p:column headerText="Status" width="100" style="text-align: center"
+					sortBy="#{usuario.ativo}">
+					<h:outputText value="#{usuario.ativo ? 'ATIVO' : 'INATIVO' }" />
+				</p:column>
+
+				<p:column headerText="">
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Exclusão de Usuário" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="340" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Tem certeza que deseja excluir o Usuário:" />
+					<p:outputLabel
+						value="#{usuarioBean.usuarioExclusao.id} - #{usuarioBean.usuarioExclusao.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:5px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{usuarioBean.excluir}"
+						update="form-table"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

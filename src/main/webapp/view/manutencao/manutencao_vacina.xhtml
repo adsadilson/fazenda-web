@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template/layout_padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Manutenção Vacina</ui:define>
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewParam name="dummy" />
+			<f:event listener="#{vacinaBean.inicializarBean}"
+				type="preRenderView" />
+		</f:metadata>
+
+		<h1>Manutenção - Vacina</h1>
+
+		<h:form id="form-menu">
+			<p:toolbar styleClass="semPreenchimento">
+				<p:toolbarGroup>
+					<p:commandButton icon="novo-icon" value="Novo"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{vacinaBean.novoCadastro}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="editar-icon" value="Editar"
+						style="margin-left: 5px; margin-right: 5px;"
+						oncomplete="PF('dialogCadastro').show()" process="@this"
+						update="form-cadastro" action="#{vacinaBean.editar}"
+						disabled="#{vacinaBean.vacinaSelecionado==null}">
+						<p:resetInput target="form-cadastro" />
+					</p:commandButton>
+					<p:commandButton icon="excluir-icon" value="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":form-Exclusao" action="#{vacinaBean.editar}"
+						disabled="#{vacinaBean.vacinaSelecionado==null}">
+					</p:commandButton>
+					<ui:remove>
+						<p:separator />
+						<p:commandButton icon="fa fa-filter" title="Filtrar Registro"
+							style="margin-left:5px;" oncomplete="PF('dialogFiltro').show()" />
+					</ui:remove>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Fechar" icon="fa fa-power-off"
+						outcome="/home.xhtml" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<h:form id="form-table">
+
+			<p:dataTable id="tbl-vacina" value="#{vacinaBean.vacinas}"
+				var="vacina" style="margin-top: 5px"
+				styleClass="table-tela-manutecao"
+				emptyMessage="Nenhuma registro encontrada." rows="10"
+				paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{vacinaBean.vacinaSelecionado}" rowKey="#{vacina.id}">
+
+				<p:ajax event="rowSelect" update="form-menu, form-table" />
+
+				<p:ajax event="rowUnselect" update="form-menu, form-table" />
+
+				<p:column headerText="Brinco"
+					style="width: 80px; text-align: center;"
+					sortBy="#{vacina.animal.brinco}">
+					<h:outputText value="#{vacina.animal.brinco}" />
+				</p:column>
+
+				<p:column headerText="Animal" style="width: 350px"
+					sortBy="#{vacina.animal.nome}">
+					<h:outputText value="#{vacina.animal.nome}" />
+				</p:column>
+
+				<p:column headerText="Data Vacina"
+					style="width: 100px; text-align: center;"
+					sortBy="#{vacina.dtVacina}">
+					<h:outputText value="#{vacina.dtVacina}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Tipo Vacina" style="width: 250px">
+					<h:outputText value="#{vacina.tipoVacina.nome}" />
+				</p:column>
+
+				<p:column headerText="Obsevação">
+					<h:outputText value="#{vacina.obs}" />
+				</p:column>
+
+
+
+			</p:dataTable>
+
+		</h:form>
+
+		<p:dialog header="Lançamento de Vacina" widgetVar="dialogCadastro"
+			styleClass="espacamento_dialog" modal="true" resizable="false"
+			draggable="true" id="dgCadastro" closeOnEscape="true" width="615"
+			height="350" appendTo="@(body)">
+
+			<h:form id="form-cadastro">
+
+				<p:tabView styleClass="espacamento-tabview">
+					<p:tab title="Identificação do Animal">
+						<p:panelGrid columns="1" styleClass="semBorda">
+							<p:outputLabel for="nome" value="Brinco/Nome" />
+							<p:selectOneMenu autoWidth="false" filter="true"
+								filterMatchMode="contains" style="width: 545px;" required="true"
+								id="nome" requiredMessage="Selecione um animal"
+								disabled="#{vacinaBean.vacina.id!=null}"
+								value="#{vacinaBean.vacina.animal}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItem itemLabel="Selecione um animal"
+									itemValue="#{null}" />
+								<f:selectItems value="#{vacinaBean.animals}" var="animal"
+									itemLabel="#{animal.brinco} - #{animal.nome}"
+									itemValue="#{animal}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+
+				<p:tabView id="tabview" styleClass="espacamento-tabview">
+					<p:tab title="Vacina">
+						<p:panelGrid styleClass="semBorda">
+							<!-- 1ª LINHA -->
+							<p:row>
+								<p:column>
+									<p:outputLabel for="dtvacina" value="Data Vacina" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="tipovacina" value="Tipo Vacina" />
+								</p:column>
+								<p:column>
+									<p:outputLabel for="responsavel" value="Responsável" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:calendar id="dtvacina" size="12" pattern="dd/MM/yyyy"
+										locale="pt_BR" required="true"
+										disabled="#{vacinaBean.vacina.id!=null}"
+										value="#{vacinaBean.vacina.dtVacina}"
+										requiredMessage="Informe a data vacina">
+									</p:calendar>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="tipovacina" autoWidth="false"
+										style="width: 150px;" required="true"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{vacinaBean.vacina.tipoVacina}"
+										requiredMessage="Selecione um tipo vacina">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{vacinaBean.tipoVacinas}"
+											var="tpVacina" itemLabel="#{tpVacina.nome}"
+											itemValue="#{tpVacina}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="responsavel" autoWidth="false"
+										style="width: 235px;" required="true"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{vacinaBean.vacina.responsavel}"
+										requiredMessage="Selecione um responsável">
+										<f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+										<f:selectItems value="#{fichaCoberturaBean.responsaveis}"
+											var="responsavel" itemLabel="#{responsavel.nome}"
+											itemValue="#{responsavel}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<!-- 2ª LINHA -->
+							<p:row>
+								<p:column colspan="3">
+									<p:inputTextarea rows="5" style="width: 98%;"
+										value="#{vacinaBean.vacina.obs}" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+
+
+				<p:toolbar style="margin-top: 10px" styleClass="semPreenchimento">
+					<p:toolbarGroup style="margin-left: 15px;">
+						<ui:remove>
+							<p:commandButton icon="fa fa-question-circle" iconPos="right"
+								title="Informação" oncomplete="PF('cadastroInfo').show()"
+								process="@this">
+								<p:resetInput target="form-cadastro-info" />
+							</p:commandButton>
+						</ui:remove>
+					</p:toolbarGroup>
+					<p:toolbarGroup align="right" style="margin-right: 10px;">
+						<p:commandButton value="Cancelar" icon="cancelar-icon"
+							style="margin-right: 3px;"
+							oncomplete="PF('dialogCadastro').hide()" immediate="true" />
+						<p:commandButton value="Salvar" icon="salvar-icon"
+							update=":form-cadastro :form-cadastro:tabview :form-table :form-menu"
+							action="#{vacinaBean.salvar}" id="salvarCommandButton"
+							oncomplete="if(args.sucesso == true) PF('dialogCadastro').hide()" />
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:defaultCommand target="salvarCommandButton" />
+
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="Exclusão" widgetVar="confirmacaoExclusao"
+			modal="true" resizable="false" draggable="true" closeOnEscape="true"
+			width="400" appendTo="@(body)">
+			<h:form id="form-Exclusao">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel
+						value="Tem certeza que deseja excluir a Vacina aplicada no Animal:" />
+					<p:outputLabel
+						value="#{vacinaBean.vacina.animal.brinco} - #{vacinaBean.vacina.animal.nome} ?" />
+					<p:outputLabel
+						value="#{vacinaBean.vacina.id} - #{vacinaBean.vacina.tipoVacina.nome} ?" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button value="Não" style="margin-right:8px; margin-top: 15px"
+						onclick="PF('confirmacaoExclusao').hide(); return false;" />
+					<p:commandButton value="Sim" action="#{vacinaBean.excluir}"
+						update="form-table, form-menu"
+						oncomplete="if(!args.validationFailed) PF('confirmacaoExclusao').hide()" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="Informação" widgetVar="cadastroInfo" modal="true"
+			resizable="false" draggable="true" closeOnEscape="true" width="350"
+			height="190" appendTo="@(body)">
+			<h:form id="form-cadastro-info">
+				<p:panelGrid columns="1" styleClass="semBorda">
+					<p:outputLabel value="Observação" style="color: red;" />
+					<p:outputLabel
+						value="Depois de cadastrado o registro de
+					vacina/Diagnóstico só é permitido alteração dos campos de
+					Observação e Diagnóstico (desde que o parto ainda não tenha sido
+					cadastrado). Caso algum outro tipo de informação esteja incorreto,
+					será necessário excluir o registro e incluí-lo novamente" />
+				</p:panelGrid>
+				<p:panelGrid styleClass="semBorda">
+					<p:button icon="fa fa-thumbs-up"
+						style="margin-right:8px; margin-top: 20px"
+						onclick="PF('cadastroInfo').hide(); return false;" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>
